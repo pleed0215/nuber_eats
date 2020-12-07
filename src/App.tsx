@@ -1,15 +1,28 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
+import { gql, useQuery } from "@apollo/client";
+import { LoggedInRouter } from "./Routers/logged-in-router";
+import { LoggedOutRouter } from "./Routers/logged-out-router";
+import { isLoggedInVar } from "./apollo";
+
+const GQL_LOGGED_IN = gql`
+  {
+    isLoggedIn @client
+  }
+`;
 
 function App() {
-  return (
-    <div className="w-full h-full flex flex-col justify-center items-center">
-      <div className="my_class bg-gradient-to-br from-red-500 shadow-2xl flex justify-center items-center">
-        <h1 className="text-3xl text-black text-center">Hello tailwind</h1>
-      </div>
-    </div>
-  );
+  const {
+    data: { isLoggedIn },
+    loading,
+    error,
+  } = useQuery(GQL_LOGGED_IN);
+
+  if (loading) return <span>still loading</span>;
+  if (error) return <span>Error: {error}</span>;
+
+  return isLoggedInVar() ? <LoggedInRouter /> : <LoggedOutRouter />;
 }
 
 export default App;
