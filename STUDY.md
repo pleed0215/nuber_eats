@@ -62,3 +62,75 @@ local variable을 저장하고 읽어 올 수 있는 기능.
 - This initializes a reactive variable that contains an empty array. We can get this variable's current value by calling cartItemsVar(), and we can set a new value by calling cartItemsVar(newValue).
 - 이것을 이용하면 매번 로컬 변수가 필요할 때마다 query를 할 필요가 없다.
 - useQuery를 이용안해도 된다. userReactiveVar를 이용해보자.
+
+### 2. React hook form
+
+- 사실 리액트에서 폼 만들기는 정말 뻑킹스럽다. 그래서 쓰는 패키지.
+
+기본 예시 코드.
+
+```ts
+  const { register, handleSubmit, watch, errors } = useForm();
+  const onSubmit = data => console.log(data);
+  const onInvalid = ()=> console.log("Cannot create");
+
+  console.log(watch("example")); // watch input value by passing the name of it
+
+  return (
+    {/* "handleSubmit" will validate your inputs before invoking "onSubmit" */}
+    <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
+    {/* register your input into the hook by invoking the "register" function */}
+      <input name="example" defaultValue="test" ref={register({validate: (email:string) => email.includes("@gmail.com")})} />
+
+      {/* include validation with required or other standard HTML validation rules */}
+      <input name="exampleRequired" ref={register({ required: true })} />
+      {/* errors will return when field validation fails  */}
+      {errors.exampleRequired && <span>This field is required</span>}
+
+      <input type="submit" />
+    </form>
+  );
+```
+
+- sample code에서 register required 사용할 때 굳이 input에 required를 주지 않았다는 것을 확인하자.
+  - required 옵션을 줄 때에는 메시지로 줄 수도 있다.
+- error 사용하는 방법도 확인.
+- validating 하는 방법 확인
+- onInvalid도 확인.
+- pattern을 처리할 수도 있다. 정규식으로..
+
+리액트에서 사실.. 위의 폼을 만드려면 useState 남발해야 하는데.. 데이터 관리도 어렵다.
+
+- interface를 이용하여 typescript를 활용해도 괜찮다.
+
+```ts
+interface IForm {
+  email: string;
+  password: string;
+}
+useForm<IForm>();
+```
+
+- inteerface 대신 type을 써도 괜찮은 모양이다.
+
+  #### Resolver
+
+  ```ts
+  import { Resolver, useForm } from "react-hook-form";
+
+  const resolver: Resolver<FormValues> = async (values) => {
+    return {
+      values: values.firstName ? values : {},
+      errors: !values.firstName
+        ? {
+            firstName: {
+              type: "required",
+              message: "This is required.",
+            },
+          }
+        : {},
+    };
+  };
+  ```
+
+  - custom validation을 만들 때 유용하다고 한다.

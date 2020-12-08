@@ -1,3 +1,6 @@
 import React from "react";
+import { BrowserRouter as Router } from "react-router-dom";
 
-export const LoggedOutRouter = () => <h1>Lgged Out</h1>;
+export const LoggedOutRouter = () => {
+  return <Router></Router>;
+};
