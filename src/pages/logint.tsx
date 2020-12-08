@@ -8,6 +8,8 @@ import {
 } from "../codegen/LoginMutation";
 import { EMAIL_REGEX } from "../utils";
 
+import nuberLogo from "../images/eats-logo.svg";
+
 const GQL_LOGIN = gql`
   mutation LoginMutation($email: String!, $password: String!) {
     login(email: $email, password: $password) {
@@ -48,14 +50,14 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-800">
-      <div className="bg-white w-full max-w-lg text-gray-800 px-10 py-10 rounded-lg text-center">
-        <h3 className="text-2xl text-gray-800">Log in</h3>
-        <form
-          className="flex flex-col mt-5 px-5"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <div className="flex flex-col mb-4">
+    <div className="h-screen w-full max-w-screen-sm flex flex-col items-center ">
+      <img src={nuberLogo} alt="logo" className="w-60 mb-5 mt-10 lg:mt-32" />
+      <div className="bg-white w-full max-h-half h-1/3 max-w-lg text-gray-800 px-10 py-10 rounded-lg text-center">
+        <h3 className="text-3xl font-medium w-full text-left text-gray-800">
+          Welcome back
+        </h3>
+        <form className="flex flex-col mt-2" onSubmit={handleSubmit(onSubmit)}>
+          <div className="flex flex-col">
             <input
               placeholder="Email"
               name="email"
@@ -78,7 +80,7 @@ export const LoginPage = () => {
               <span></span>
             )}
           </div>
-          <div className="flex flex-col mb-4">
+          <div className="flex flex-col">
             <input
               placeholder="Password"
               name="password"
