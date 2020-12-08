@@ -134,3 +134,69 @@ useForm<IForm>();
   ```
 
   - custom validation을 만들 때 유용하다고 한다.
+
+### 3. useMutation & apollo codegen
+
+1. apollo codegen 검색해서 페이지 들어가서 패키지 인스톨 필요.
+
+   > npm install -g apollo & npm install apollo
+
+2. install 후에는 apollo.config.js 만들어주자.
+
+```js
+module.exports = {
+  client: {
+    include: ["src/**/*.tsx"],
+    tagName: "gql",
+    service: {
+      name: "nuber-eats-backend",
+      url: "http://lednas.yoyang.io:32789/graphql",
+      // optional headers
+      headers: {
+        authorization: "Bearer lkjfalkfjadkfjeopknavadf",
+      },
+      // optional disable SSL validation check
+      skipSSLValidation: true,
+    },
+  },
+};
+```
+
+3. 콘솔에서 명령어 입력해서 code generating 하기
+
+   > apollo client:codegen OUTPUT --target typescript
+
+4. useMutation with typescript
+
+- generating 된 파일
+
+```ts
+export interface LoginMutation_login {
+  __typename: "LoginOutput";
+  ok: boolean;
+  error: string | null;
+  token: string | null;
+}
+
+export interface LoginMutation {
+  login: LoginMutation_login;
+}
+
+export interface LoginMutationVariables {
+  email: string;
+  password: string;
+}
+```
+
+- useMutation이렇게 사용하면된다.
+  > useMutation<LoginMutation, LoginMutationVariables>();
+- 예를들어 문자가 들어가야 할 곳에, 숫자가 들어가는 등 typescript 활용하는 방법이라 생각하면 될 듯하다.
+
+- useMutation의 options에는 onComplete, onError가 있다.
+  - onCompete는 data가 넘겨지며, onError는 ApolloError가 넘겨진다.
+  - useMutation에서 굳이 {loading, error, data}까지 쓸 필요는 없을 것 같다.
+
+### 4. rimraf
+
+- rm -rf on node
+  - mac 이외의 os에서도 rm -rf를 할 수 있도록 해주는 패키지.

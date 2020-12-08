@@ -19,16 +19,16 @@ body,
   @apply mt-5;
 }
 
-.auth__form_input:not(:last-child) {
-  @apply mb-4;
-}
-
 .auth__form {
   @apply flex flex-col;
 }
 
 .auth__form_button {
   @apply py-3 px-5 bg-gray-800 text-white mt-3 text-lg rounded-lg focus:outline-none hover:opacity-90;
+}
+
+.auth__form_error {
+  @apply text-sm text-red-600 italic text-left mt-1;
 }
 
 @tailwind utilities;
