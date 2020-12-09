@@ -246,3 +246,61 @@ const authLink = setContext((request, prevContext) => {
 export const apolloClient = new ApolloClient({
   link: authLink.concat(httpLink),
 ```
+
+### 10. Router & Switch & Route
+
+- Switch의 유무에 따라 Route의 행동 양식이 다르다.
+
+  - 일반적으로 routing을 하고 싶으면 switch를 사용하는 것이 맞다.
+  - 그냥 Route를 사용하면 Route에 해당하는 모든 것들이 렌더링이 되는데..
+  - Switch를 사용하면.. 해당 path만 렌더링 된다.
+
+  #### 여기서 재밌는 점이 하나 발견된다.
+
+  Switch의 바로 밑의 children이 route가 되어야 한다.
+  처음에 강의에서 아래와 같이 코드를 작성했다.
+
+  ```ts
+  const ClientRoutes = () => (
+    <>
+      <Route exact path="/">
+        <Restaurants />
+      </Route>
+      <Route>
+        <NotFound />
+      </Route>
+    </>
+  );
+
+  export const LoggedInRouter = () => {
+    ....
+
+    return (
+      <Router>{data.me.role === UserRole.Client && <ClientRoutes />}</Router>
+    );
+  }
+  ```
+
+  - 이 코드의 문제점이 바로 ClientRoutes에서 Fragment를 사용했다는 것.. 그라믄 원하는대로 Switch가 작동하지않아 모든 Route에 해당하는 것을 렌더링 해뻘인다.
+  - 그래서 위의 코드는 아래와 같이 해괴망측한 코드가 되어야 한다고 한다.
+
+  ```ts
+  const ClientRoutes =  [
+      <Route exact path="/">
+        <Restaurants />
+      </Route>
+      <Route>
+        <NotFound />
+      </Route>
+  ];
+
+  export const LoggedInRouter = () => {
+    ....
+
+    return (
+      <Router>{data.me.role === UserRole.Client && ClientRoutes }</Router>
+    );
+  }
+  ```
+
+  - 정밀 기괴하고 룰에서 벗어난 코드인 것처럼 보인다.

@@ -140,7 +140,7 @@ export const CreateAccountPage = () => {
           <p className="mt-4">
             You already have your account?
             <Link
-              to="/login"
+              to="/"
               className="text-lime-600 hover:underline font-semibold"
             >
               Sign in now.

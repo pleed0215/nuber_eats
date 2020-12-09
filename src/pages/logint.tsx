@@ -12,7 +12,7 @@ import nuberLogo from "../images/eats-logo.svg";
 import { FormButtonInactivable } from "../components/form-button-inactivable";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { isLoggedInVar } from "../apollo";
+import { authTokenVar, isLoggedInVar } from "../apollo";
 import { TOKEN_NAME } from "../gloabl.constant";
 
 const GQL_LOGIN = gql`
@@ -39,9 +39,10 @@ export const LoginPage = () => {
     LoginMutationVariables
   >(GQL_LOGIN, {
     onCompleted: ({ login: { ok, error, token } }) => {
-      if (ok) {
+      if (ok && token) {
         toast.success("Welcome to nuber-eats");
-        if (token) localStorage.setItem(TOKEN_NAME, token);
+        authTokenVar(token);
+        localStorage.setItem(TOKEN_NAME, token);
         isLoggedInVar(true);
       } else {
         toast.error(error);

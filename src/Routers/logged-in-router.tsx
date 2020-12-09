@@ -1,7 +1,20 @@
 import { gql, useQuery } from "@apollo/client";
 import React from "react";
-import { authTokenVar, isLoggedInVar } from "../apollo";
-import { TOKEN_NAME } from "../gloabl.constant";
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+} from "react-router-dom";
+import { UserRole } from "../codegen/globalTypes";
+import { NotFound } from "../pages/404";
+import { Restaurants } from "../pages/client/restaurants";
+
+const ClientRoutes = [
+  <Route path="/" exact>
+    <Restaurants />
+  </Route>,
+];
 
 const GQL_QUERY_ME = gql`
   query QueryMe {
@@ -17,35 +30,22 @@ const GQL_QUERY_ME = gql`
 export const LoggedInRouter = () => {
   const { data, loading, error } = useQuery(GQL_QUERY_ME);
 
-  if (loading) {
-    <div className="h-screen flex justify-center items-center">
-      <span className="font-medium text-xl tracking-wide">Loading...</span>
-    </div>;
-  }
-
-  if (error) {
-    console.log(error);
+  if (!data || error || loading) {
     return (
       <div className="h-screen flex justify-center items-center">
-        <span className="font-medium text-xl tracking-wide">
-          {error.toString()}
-        </span>
-      </div>
-    );
-  } else {
-    return (
-      <div>
-        <h1>{data?.me.email}</h1>
-        <button
-          onClick={() => {
-            isLoggedInVar(false);
-            authTokenVar(null);
-            localStorage.removeItem(TOKEN_NAME);
-          }}
-        >
-          Logout
-        </button>
+        <span className="font-medium text-xl tracking-wide">Loading...</span>
       </div>
     );
   }
+
+  return (
+    <Router>
+      <Switch>
+        {data.me.role === UserRole.Client && ClientRoutes}
+        <Route>
+          <NotFound />
+        </Route>
+      </Switch>
+    </Router>
+  );
 };
