@@ -200,3 +200,49 @@ export interface LoginMutationVariables {
 
 - rm -rf on node
   - mac 이외의 os에서도 rm -rf를 할 수 있도록 해주는 패키지.
+
+### 5. formState (useForm, react-hook-form)
+
+- isValid를 사용하려면 onChange, onBlur 모드에서 가능.
+  - onChange는 매 입력이 발생할 때마다, onBlur는 focusing이 바뀔 때마다 일어나나 보다..
+
+### 6. useReactiveVar
+
+- makeVar 사용 시 요걸 해줘야 값이 업데이트 될 때 호출되는 값도 바뀌는 갑다..
+
+### 7. useHistory
+
+- react router dom 에서 redirect나 페이지 이동 등을 사용하고 싶을 때..
+  - redirect
+  ```js
+  const history = useHistory();
+  history.push("/");
+  ```
+
+### 8. React helmet async
+
+- 기존의 react helmet은 warning을 내뿜는다.. 수정된 버전인갑다..
+- warning이기 때문에 설치 하든 말든 자기 마음임.
+- helmet과는 다르게 HelmetProvider로 전체 앱을 감싸줘야 한다.
+
+### 9. apollo server에 token을 넘겨주려면..?
+
+- apollo-link 페이지에 가보면 많은 링크가 있는데, 일단 여기서 사용할 것들은, apollo-http-link, apollo-ws-link 둘.
+
+```ts
+const httpLink = createHttpLink({
+  uri: "http://lednas.yoyang.io:32789/graphql",
+});
+
+const authLink = setContext((request, prevContext) => {
+  return {
+    headers: {
+      ...prevContext.headers,
+      "x-jwt": authTokenVar() || "",
+    },
+  };
+});
+
+export const apolloClient = new ApolloClient({
+  link: authLink.concat(httpLink),
+```

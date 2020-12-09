@@ -24,7 +24,7 @@ body,
 }
 
 .auth__form_button {
-  @apply py-3 px-5 bg-lime-600 font-bold text-white mt-3 text-lg focus:outline-none hover:bg-lime-800 transition duration-500;
+  @apply py-3 px-5 bg-lime-600 font-bold text-white mt-3 text-lg focus:outline-none hover:bg-lime-800 transition duration-500 disabled:bg-gray-400;
 }
 
 .auth__form_error {
