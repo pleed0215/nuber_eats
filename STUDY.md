@@ -304,3 +304,10 @@ export const apolloClient = new ApolloClient({
   ```
 
   - 정밀 기괴하고 룰에서 벗어난 코드인 것처럼 보인다.
+
+### 11. Container
+
+- tailwindcss 2.0부터는 기능이 상당히 많아졌다.
+- max-w-screen-lg, max-w-7xl 이런것들..
+
+### 12. React Fontawesome

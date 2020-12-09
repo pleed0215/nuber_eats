@@ -7,6 +7,7 @@ import {
   Switch,
 } from "react-router-dom";
 import { UserRole } from "../codegen/globalTypes";
+import { Header } from "../components/header";
 import { NotFound } from "../pages/404";
 import { Restaurants } from "../pages/client/restaurants";
 
@@ -40,6 +41,7 @@ export const LoggedInRouter = () => {
 
   return (
     <Router>
+      <Header email={data.me.email} />
       <Switch>
         {data.me.role === UserRole.Client && ClientRoutes}
         <Route>
