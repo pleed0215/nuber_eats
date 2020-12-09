@@ -311,3 +311,7 @@ export const apolloClient = new ApolloClient({
 - max-w-screen-lg, max-w-7xl 이런것들..
 
 ### 12. React Fontawesome
+
+### 13. apollo 관련된 hook
+
+- useMe 관련된 hook을 만들었는데, 여기서는 여러번 query를 하는 것 같아서 걱정했는데, apollo에서 자동으로 caching을 하니까 걱정 말고 써도 된다고 한다.

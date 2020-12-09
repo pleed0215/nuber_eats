@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import { UserRole } from "../codegen/globalTypes";
 import { Header } from "../components/header";
+import { useMe } from "../hooks/useMe";
 import { NotFound } from "../pages/404";
 import { Restaurants } from "../pages/client/restaurants";
 
@@ -17,19 +18,8 @@ const ClientRoutes = [
   </Route>,
 ];
 
-const GQL_QUERY_ME = gql`
-  query QueryMe {
-    me {
-      id
-      email
-      role
-      verified
-    }
-  }
-`;
-
 export const LoggedInRouter = () => {
-  const { data, loading, error } = useQuery(GQL_QUERY_ME);
+  const { data, loading, error } = useMe();
 
   if (!data || error || loading) {
     return (
@@ -41,7 +31,7 @@ export const LoggedInRouter = () => {
 
   return (
     <Router>
-      <Header email={data.me.email} />
+      <Header />
       <Switch>
         {data.me.role === UserRole.Client && ClientRoutes}
         <Route>
