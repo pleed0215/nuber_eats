@@ -312,6 +312,48 @@ export const apolloClient = new ApolloClient({
 
 ### 12. React Fontawesome
 
+- 검색해서 관련 패키지 인스톨하면 된다. 사용방법이 쉽다.
+
 ### 13. apollo 관련된 hook
 
 - useMe 관련된 hook을 만들었는데, 여기서는 여러번 query를 하는 것 같아서 걱정했는데, apollo에서 자동으로 caching을 하니까 걱정 말고 써도 된다고 한다.
+
+## 3. User Pages
+
+verify, edit profile, etc..
+
+### 1. useLocation
+
+- 주소를 얻어오는 방법. react router dom.
+
+### 2. URLSearchParams
+
+https://reactrouter.com/web/example/query-parameters
+
+- react router dom 을 쓸 때 search에서 query param 분리하는 코드.
+
+### 3. reading and writing data to the cache..
+
+- readQuery & readFragment
+- writeQuery & writeFragment
+- cache.modify(a method of InMemoryCache)
+
+- chrome의 확장 apollo에 가보면, cache항목에 있는데 apollo가 똑똑해서 우리가 쿼링이나 mutation한 것들을 캐싱 해놓는다.
+
+- email verify를 해서 우리가 verification을 완료 했다고 가정을 했을 때, 과연 자동으로 verification이 된 것으로 알고 있을까.. 생각해보면 아니라는 걸 알 수 있다.
+- 그래서 fragment로 일부 타입을 수정을 해줘야 한다.
+
+```ts
+const client = useApolloClient();
+client.writeFragment({
+  id: userData?.me?.id.toString(),
+  fragment: gql`
+    fragment VerifiedUser on User {
+      verified
+    }
+  `,
+  data: {
+    verified: true,
+  },
+});
+```

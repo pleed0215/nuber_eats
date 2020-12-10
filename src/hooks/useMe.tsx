@@ -1,4 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
+import { QueryMe } from "../codegen/QueryMe";
 
 const GQL_QUERY_ME = gql`
   query QueryMe {
@@ -12,5 +13,5 @@ const GQL_QUERY_ME = gql`
 `;
 
 export const useMe = () => {
-  return useQuery(GQL_QUERY_ME);
+  return useQuery<QueryMe>(GQL_QUERY_ME);
 };
