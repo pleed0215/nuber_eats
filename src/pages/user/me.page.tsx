@@ -11,6 +11,7 @@ import {
   MutationUpdateProfileVariables,
 } from "../../codegen/MutationUpdateProfile";
 import { FormButtonInactivable } from "../../components/form-button-inactivable";
+import { HelmetOnlyTitle } from "../../components/helmet.onlytitle";
 import { useMe } from "../../hooks/useMe";
 import { EMAIL_REGEX } from "../../utils";
 
@@ -80,6 +81,7 @@ export const EditProfile = () => {
 
   return (
     <div className="px-5 items-center flex flex-col w-screen mt-32">
+      <HelmetOnlyTitle title="Updating your information" />
       <h4 className="font-semibold text-2xl mb-3">Edit Profile</h4>
       <form
         className="auth__form max-w-screen-sm w-full"

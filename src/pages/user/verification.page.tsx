@@ -7,6 +7,7 @@ import {
   MutationVerifyCode,
   MutationVerifyCodeVariables,
 } from "../../codegen/MutationVerifyCode";
+import { HelmetOnlyTitle } from "../../components/helmet.onlytitle";
 import { useMe } from "../../hooks/useMe";
 import { useQueryParam } from "../../hooks/useQueryParam";
 
@@ -71,6 +72,7 @@ export const VerificationPage = () => {
 
   return (
     <div className="mt-52 flex flex-col items-center justify-center">
+      <HelmetOnlyTitle title="Verifying your email address" />
       {loading ? (
         <h1 className="text-lg mb-2 font-medium">
           Confirming your verification.. Please wait..

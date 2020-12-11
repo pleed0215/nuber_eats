@@ -1,5 +1,5 @@
 import { useApolloClient } from "@apollo/client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { authTokenVar, isLoggedInVar } from "../../apollo";
 import { TOKEN_NAME } from "../../gloabl.constant";

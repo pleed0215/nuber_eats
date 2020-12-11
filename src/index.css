@@ -15,6 +15,10 @@ body,
   @apply border-2  py-3 px-5 focus:ring-2 focus:ring-lime-500 focus:ring-offset-2 focus:ring-opacity-80 outline-none transition duration-500;
 }
 
+.form_input {
+  @apply border-2  py-3 px-5 focus:ring-2 focus:ring-lime-500 focus:ring-offset-2 focus:ring-opacity-80 outline-none transition duration-500;
+}
+
 .auth__form_input:first-child {
   @apply mt-5;
 }

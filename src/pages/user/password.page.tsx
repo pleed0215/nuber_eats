@@ -8,7 +8,6 @@ import {
   MutationUpdatePasswordVariables,
 } from "../../codegen/MutationUpdatePassword";
 import { FormButtonInactivable } from "../../components/form-button-inactivable";
-import { useMe } from "../../hooks/useMe";
 
 const GQL_UPDATE_PASSWORD = gql`
   mutation MutationUpdatePassword($password: String!) {
@@ -25,9 +24,8 @@ interface UpdatePasswordForm {
 }
 
 export const UpdatePassword = () => {
-  const { data: userData } = useMe();
   const history = useHistory();
-  const [updatePassword, { loading, data, error }] = useMutation<
+  const [updatePassword, { loading }] = useMutation<
     MutationUpdatePassword,
     MutationUpdatePasswordVariables
   >(GQL_UPDATE_PASSWORD, {

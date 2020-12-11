@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { CreateUserVariables, CreateUser } from "../codegen/CreateUser";
 import { CreateUserInput, UserRole } from "../codegen/globalTypes";
 import { FormButtonInactivable } from "../components/form-button-inactivable";
+import { HelmetOnlyTitle } from "../components/helmet.onlytitle";
 import nuberLogo from "../images/eats-logo.svg";
 import { EMAIL_REGEX } from "../utils";
 
@@ -58,9 +59,7 @@ export const CreateAccountPage = () => {
 
   return (
     <div className="h-screen w-full flex justify-center ">
-      <Helmet>
-        <title>Nuber | Create your account</title>
-      </Helmet>
+      <HelmetOnlyTitle title="Creating your account" />
       <div className="h-auto w-full max-w-screen-sm flex flex-col items-center ">
         <img src={nuberLogo} alt="logo" className="w-60 mb-5 mt-10 lg:mt-32" />
         <div className="bg-white w-full max-h-half h-1/3 max-w-lg text-gray-800 px-10 py-10 rounded-lg text-center">

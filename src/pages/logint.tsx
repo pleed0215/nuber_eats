@@ -14,6 +14,7 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { authTokenVar, isLoggedInVar } from "../apollo";
 import { TOKEN_NAME } from "../gloabl.constant";
+import { HelmetOnlyTitle } from "../components/helmet.onlytitle";
 
 const GQL_LOGIN = gql`
   mutation LoginMutation($email: String!, $password: String!) {
@@ -63,9 +64,7 @@ export const LoginPage = () => {
 
   return (
     <div className="h-screen w-full min-w-scree-sm flex justify-center ">
-      <Helmet>
-        <title>Welcome back to nuber-eats</title>
-      </Helmet>
+      <HelmetOnlyTitle title="Welcome to nuber eats" />
       <div className="h-auto w-full max-w-screen-sm flex flex-col items-center ">
         <img src={nuberLogo} alt="logo" className="w-60 mb-5 mt-10 lg:mt-32" />
         <div className="bg-white w-full max-h-half h-1/3 max-w-lg text-gray-800 px-10 py-10 rounded-lg text-center">
