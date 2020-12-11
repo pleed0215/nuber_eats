@@ -357,3 +357,7 @@ client.writeFragment({
   },
 });
 ```
+
+### 4. wrtieFragment vs Refetch
+
+- cache를 업데이트하는 두 가지 방법.

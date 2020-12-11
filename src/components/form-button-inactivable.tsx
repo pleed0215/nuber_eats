@@ -1,12 +1,12 @@
 import React from "react";
 
 type FormButtonInactivableType = {
-  isActivate: boolean;
+  isActivate?: boolean;
   loading: boolean;
 };
 
 export const FormButtonInactivable: React.FC<FormButtonInactivableType> = ({
-  isActivate,
+  isActivate = false,
   loading,
   children,
 }) => (

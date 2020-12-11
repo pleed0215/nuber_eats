@@ -12,17 +12,21 @@ import { useMe } from "../hooks/useMe";
 import { NotFound } from "../pages/404";
 import { Restaurants } from "../pages/client/restaurants";
 import { EditProfile } from "../pages/user/me.page";
+import { UpdatePassword } from "../pages/user/password.page";
 import { VerificationPage } from "../pages/user/verification.page";
 
 const ClientRoutes = [
-  <Route path="/" exact>
+  <Route key={1} path="/" exact>
     <Restaurants />
   </Route>,
-  <Route path="/verification">
+  <Route key={2} path="/verification">
     <VerificationPage />
   </Route>,
-  <Route path="/me">
+  <Route key={3} path="/me">
     <EditProfile />
+  </Route>,
+  <Route key={4} path="/password">
+    <UpdatePassword />
   </Route>,
 ];
 

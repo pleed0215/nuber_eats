@@ -19,6 +19,11 @@ export interface CreateUserInput {
   role: UserRole;
 }
 
+export interface UpdateProfileInput {
+  email?: string | null;
+  role?: UserRole | null;
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================

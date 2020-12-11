@@ -19,6 +19,10 @@ body,
   @apply mt-5;
 }
 
+.auth__input_wrapper {
+  @apply mb-3 flex flex-col;
+}
+
 .auth__form {
   @apply flex flex-col;
 }

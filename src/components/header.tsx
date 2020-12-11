@@ -15,7 +15,7 @@ export const Header: React.FC = () => {
         </div>
       )}
       <header className="py-4 ">
-        <div className="w-full px-5 md:px-0 lg:px-0 xl:px-0 max-w-screen-xl mx-auto flex justify-between items-center">
+        <div className="w-full px-5 max-w-screen-xl mx-auto flex justify-between items-center">
           <div>
             <NuberLogo className="w-40" />
           </div>
