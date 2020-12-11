@@ -1,4 +1,4 @@
-import { faUserAlt } from "@fortawesome/free-solid-svg-icons";
+import { faDoorOpen, faUserAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Link } from "react-router-dom";
@@ -17,13 +17,21 @@ export const Header: React.FC = () => {
       <header className="py-4 ">
         <div className="w-full px-5 max-w-screen-xl mx-auto flex justify-between items-center">
           <div>
-            <NuberLogo className="w-40" />
+            <Link to="/">
+              <NuberLogo className="w-40" />
+            </Link>
           </div>
           <div>
             <Link to="/me">
-              <span className="text-xl">
+              <span className="text-lg mr-6 hover:underline">
                 <FontAwesomeIcon icon={faUserAlt} className="mr-2" />
                 {data?.me?.email}
+              </span>
+            </Link>
+            <Link to="/logout">
+              <span className="text-lg hover:underline">
+                <FontAwesomeIcon icon={faDoorOpen} className="mr-2" />
+                Log out
               </span>
             </Link>
           </div>

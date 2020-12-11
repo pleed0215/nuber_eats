@@ -361,3 +361,11 @@ client.writeFragment({
 ### 4. wrtieFragment vs Refetch
 
 - cache를 업데이트하는 두 가지 방법.
+  한가지는 위에서 다뤘고, 한가지는...
+  useQuery 할 때,...
+  ```ts
+  const { data, refetch } = useQuery<QueryMe>(GQL_QUERY_ME);
+  ```
+  두번째 항목인 refetch에... 주목.
+- 앞전의 방법은 백엔드에는 이미 데이터가 반영되었으니, 로컬에 빠르게 캐싱을 이용하여 데이터를 업데이트 할 수 있는 반면, refetch는 fetching을 다시하여 caching을 업데이트 한다.
+- 결론은 똑같은데 코드가 줄어든다. 최적화하는 경우에는 캐싱을 직접 조작하는 경우가 더 나을 것 같다.

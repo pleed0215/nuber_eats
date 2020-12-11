@@ -11,6 +11,7 @@ import { Header } from "../components/header";
 import { useMe } from "../hooks/useMe";
 import { NotFound } from "../pages/404";
 import { Restaurants } from "../pages/client/restaurants";
+import { LogOutPage } from "../pages/user/logout";
 import { EditProfile } from "../pages/user/me.page";
 import { UpdatePassword } from "../pages/user/password.page";
 import { VerificationPage } from "../pages/user/verification.page";
@@ -27,6 +28,9 @@ const ClientRoutes = [
   </Route>,
   <Route key={4} path="/password">
     <UpdatePassword />
+  </Route>,
+  <Route key={5} path="/logout">
+    <LogOutPage />
   </Route>,
 ];
 

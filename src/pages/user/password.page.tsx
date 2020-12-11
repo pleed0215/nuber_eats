@@ -1,6 +1,8 @@
 import { gql, useMutation } from "@apollo/client";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useHistory } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   MutationUpdatePassword,
   MutationUpdatePasswordVariables,
@@ -24,10 +26,20 @@ interface UpdatePasswordForm {
 
 export const UpdatePassword = () => {
   const { data: userData } = useMe();
+  const history = useHistory();
   const [updatePassword, { loading, data, error }] = useMutation<
     MutationUpdatePassword,
     MutationUpdatePasswordVariables
-  >(GQL_UPDATE_PASSWORD);
+  >(GQL_UPDATE_PASSWORD, {
+    onCompleted: ({ updatePassword: { ok, error } }) => {
+      if (ok) {
+        toast.success("Successfully changed your password");
+        history.push("/");
+      } else {
+        toast.error(error);
+      }
+    },
+  });
   const {
     register,
     handleSubmit,
@@ -48,7 +60,7 @@ export const UpdatePassword = () => {
     }
   };
   return (
-    <div className="px-5 items-center flex flex-col w-screen">
+    <div className="px-5 items-center flex flex-col w-screen mt-32">
       <h4 className="font-semibold text-2xl mb-3">Change Password</h4>
       <form
         className="auth__form max-w-screen-sm w-full"

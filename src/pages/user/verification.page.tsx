@@ -32,7 +32,7 @@ export const VerificationPage = () => {
 
     if (ok && userData?.me?.id) {
       client.writeFragment({
-        id: userData?.me?.id.toString(),
+        id: `User:${userData?.me?.id}`,
         fragment: gql`
           fragment VerifiedUser on User {
             verified

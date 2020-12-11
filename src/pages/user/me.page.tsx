@@ -1,4 +1,4 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql, useApolloClient, useMutation } from "@apollo/client";
 import { faKey } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
@@ -26,16 +26,27 @@ const GQL_UPDATE_PROFILE = gql`
 export const EditProfile = () => {
   const { data: userData } = useMe();
   const history = useHistory();
-  const [updateProfile, { loading, data, error }] = useMutation<
+  const client = useApolloClient();
+  const [updateProfile, { loading }] = useMutation<
     MutationUpdateProfile,
     MutationUpdateProfileVariables
   >(GQL_UPDATE_PROFILE, {
-    onCompleted: ({ updateProfile: { ok, error } }) => {
+    onCompleted: async ({ updateProfile: { ok, error } }) => {
       if (ok) {
-        if (
-          formState.dirtyFields.email &&
-          userData?.me?.email !== getValues("email")
-        ) {
+        if (userData?.me?.email !== getValues("email")) {
+          client.writeFragment({
+            id: `User:${userData?.me?.id}`,
+            fragment: gql`
+              fragment VerifiedUser on User {
+                verified
+                email
+              }
+            `,
+            data: {
+              email: getValues("email"),
+              verified: false,
+            },
+          });
         }
         toast.success("Updated your profile successfully.");
         history.push("/");
@@ -68,7 +79,7 @@ export const EditProfile = () => {
   };
 
   return (
-    <div className="px-5 items-center flex flex-col w-screen">
+    <div className="px-5 items-center flex flex-col w-screen mt-32">
       <h4 className="font-semibold text-2xl mb-3">Edit Profile</h4>
       <form
         className="auth__form max-w-screen-sm w-full"
@@ -94,7 +105,7 @@ export const EditProfile = () => {
         </div>
         <select className="auth__form_input" name="role" ref={register()}>
           {Object.keys(UserRole).map((role) => (
-            <option>{role}</option>
+            <option key={role}>{role}</option>
           ))}
         </select>
         <FormButtonInactivable loading={loading} isActivate={formState.isValid}>
