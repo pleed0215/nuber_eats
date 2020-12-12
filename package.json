@@ -22,6 +22,7 @@
     "apollo": "^2.31.2",
     "autoprefixer": "^9.8.6",
     "graphql": "^15.4.0",
+    "minio": "^7.0.17",
     "postcss": "^7.0.35",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
@@ -60,5 +61,7 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/minio": "^7.0.6"
+  }
 }
