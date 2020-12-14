@@ -72,10 +72,17 @@ export const Restaurants = () => {
                 />
               ))}
             </div>
-            <div className="w-full grid grid-cols-3 gap-4 mt-8">
+            <div className="layout__container mx-auto grid grid-cols-3 gap-x-5 gap-y-10 mt-8">
               {data?.allRestaurants.restaurants?.map((restaurant) => (
-                <div key={restaurant.name} className="bg-red-500">
-                  {restaurant.name}
+                <div key={restaurant.name} className="">
+                  <div
+                    className="py-28 bg-cover border border-gray-100"
+                    style={{ backgroundImage: `url(${restaurant.coverImage})` }}
+                  ></div>
+                  <h3 className="text-xl font-medium border-b border-gray-400 pb-2 mb-2">
+                    {restaurant.name}
+                  </h3>
+                  <span className="">{restaurant.category?.name}</span>
                 </div>
               ))}
             </div>
