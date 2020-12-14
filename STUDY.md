@@ -369,3 +369,84 @@ client.writeFragment({
   두번째 항목인 refetch에... 주목.
 - 앞전의 방법은 백엔드에는 이미 데이터가 반영되었으니, 로컬에 빠르게 캐싱을 이용하여 데이터를 업데이트 할 수 있는 반면, refetch는 fetching을 다시하여 caching을 업데이트 한다.
 - 결론은 똑같은데 코드가 줄어든다. 최적화하는 경우에는 캐싱을 직접 조작하는 경우가 더 나을 것 같다.
+
+### 17.4 에서....
+
+- input form의 onSubmit에서 history를 이용하여 term을 넘겨주는 redirecting을 하였는데, 기본적으로 form은 get method로 넘겨주는 방향이있는데.. 어째서.. 이렇게 했을가.. 궁금하다...
+- 아마도 기본적인 방식은 알고 있을 것이니.. 이렇게 하면 customizing을 할 수 있다는 의미일까..
+- data 보낼 때...
+  - history에서 state를 이용하여 object를 데이터로 보낼 수 있다. 그러면 주소의 query param을 감출 수 있다.
+  ```ts
+  history.push({
+    pathname: "/search",
+    state: {
+      searchTerm: "jlkajdf",
+    },
+  });
+  ```
+  이 state는 browser의 cache에 저장되기 때문에, refresh하여도 그대로 남아있는다..
+
+### history.replace
+
+- history.push와는 달리 history에 push를 추가하는 것이 아니라 말그대로 대체하는 것.
+
+  1. /edit
+  2. /search -> history.replace가 발생하면...
+  3. /
+
+  '/'에서는 search로 가는 주소가 기록에 남지 않는 것이다.
+
+  ### fragment
+
+  - fragment.tsx
+
+```ts
+export const RESTAURANT_FRAGMENT = gql`
+  fragment RestaurantPart on Restaurant {
+    id
+    name
+    coverImage
+    category {
+      id
+      name
+    }
+    address
+    isPromoted
+  }
+`;
+```
+
+- 사용할 때에는...
+
+```ts
+const GQL_SEARCH_BY_TERM = gql`
+  query QuerySearchByTerm($term: String!, $page: Int!) {
+    searchRestaurantByName(search: { query: $term, page: $page }) {
+      ok
+      error
+      totalPages
+      countTotalItems
+      restaurants {
+        # 이 부분과
+        ...RestaurantPart
+      }
+    }
+  }
+  # 이부분에 주목..
+  ${RESTAURANT_FRAGMENT}
+`;
+```
+
+### useLazyQuery
+
+- lazyQuery 리턴값의 첫번째는 함수인데, 그 함수를 실행해야... 쿼링이 시작된다.
+
+```ts
+const [queryReadyToStart, { loading, data, error }] = useLazyQuery<
+  QuerySearchByTerm,
+  QuerySearchByTermVariables
+>(GQL_SEARCH_BY_TERM);
+```
+
+코드 예시..
+queryReadyToStart를 호출하면 쿼링이 시작된다.

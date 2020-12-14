@@ -4,7 +4,11 @@ import {
   QueryRestaurantsVariables,
 } from "../../codegen/QueryRestaurants";
 import React from "react";
-import { CategoryItem } from "../../components/category";
+import { useForm } from "react-hook-form";
+import { useHistory } from "react-router-dom";
+import { HelmetOnlyTitle } from "../../components/helmet.onlytitle";
+import { Categories } from "../../components/categories";
+import { Restaurants as AllRestaurants } from "../../components/restaurants";
 
 // backend에 page를 Number로 주는 바람에... page type이 Float이다.. 나중에 수정해야 한다.
 const GQL_RESTAURANTS = gql`
@@ -43,49 +47,46 @@ const GQL_RESTAURANTS = gql`
   }
 `;
 
+interface ISearchForm {
+  searchTerm: string;
+}
+
 export const Restaurants = () => {
+  const history = useHistory();
+  const { register, handleSubmit, getValues } = useForm<ISearchForm>();
   const { data, loading, error } = useQuery<
     QueryRestaurants,
     QueryRestaurantsVariables
   >(GQL_RESTAURANTS, { variables: { page: 1 } });
 
+  const onSubmit = ({ searchTerm }: ISearchForm) => {
+    history.push({
+      pathname: "/search",
+      search: `?term=${searchTerm}`,
+    });
+  };
+
   return (
     <div className="w-full">
-      <form className="w-full py-40 flex items-center justify-center bg-gray-800">
+      <HelmetOnlyTitle title="Restaurants.." />
+      <form
+        className="w-full py-40 flex items-center justify-center bg-gray-800"
+        action="search"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <input
           type="search"
-          className="form_input w-3/12 sm:w-1/2 rounded-md"
+          name="searchTerm"
+          ref={register({ required: true, minLength: 3 })}
+          className="form_input w-5/12 sm:w-1/2 rounded-md"
           placeholder="Search restaurants..."
         />
       </form>
       <div className="layout__container flex flex-col justify-center items-center mt-10">
         {!loading && (
           <>
-            <div className="w-full flex justify-around items-center">
-              {data?.allCategories.categories?.map((category) => (
-                <CategoryItem
-                  key={category.name}
-                  width={14}
-                  height={14}
-                  image={category.image}
-                  name={category.name}
-                />
-              ))}
-            </div>
-            <div className="layout__container mx-auto grid grid-cols-3 gap-x-5 gap-y-10 mt-8">
-              {data?.allRestaurants.restaurants?.map((restaurant) => (
-                <div key={restaurant.name} className="">
-                  <div
-                    className="py-28 bg-cover border border-gray-100"
-                    style={{ backgroundImage: `url(${restaurant.coverImage})` }}
-                  ></div>
-                  <h3 className="text-xl font-medium border-b border-gray-400 pb-2 mb-2">
-                    {restaurant.name}
-                  </h3>
-                  <span className="">{restaurant.category?.name}</span>
-                </div>
-              ))}
-            </div>
+            <Categories categories={data?.allCategories.categories} />
+            <AllRestaurants restaurants={data?.allRestaurants.restaurants} />
           </>
         )}
       </div>
