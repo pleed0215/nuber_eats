@@ -3,7 +3,7 @@ import {
   QueryRestaurants,
   QueryRestaurantsVariables,
 } from "../../codegen/QueryRestaurants";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { HelmetOnlyTitle } from "../../components/helmet.onlytitle";
@@ -53,11 +53,23 @@ interface ISearchForm {
 
 export const RestaurantsPage = () => {
   const history = useHistory();
+  const [page, setPage] = useState(1);
   const { register, handleSubmit, getValues } = useForm<ISearchForm>();
   const { data, loading, error } = useQuery<
     QueryRestaurants,
     QueryRestaurantsVariables
-  >(GQL_RESTAURANTS, { variables: { page: 1 } });
+  >(GQL_RESTAURANTS, { variables: { page } });
+
+  const onPrevPage = () => setPage(page > 1 ? page - 1 : 1);
+  const onNextPage = () => {
+    console.log(data?.allRestaurants.totalPages);
+    if (data?.allRestaurants.totalPages)
+      setPage(
+        page < data?.allRestaurants.totalPages
+          ? page + 1
+          : data?.allRestaurants.totalPages
+      );
+  };
 
   const onSubmit = ({ searchTerm }: ISearchForm) => {
     history.push({
@@ -87,6 +99,11 @@ export const RestaurantsPage = () => {
           <>
             <Categories categories={data?.allCategories.categories} />
             <Restaurants restaurants={data?.allRestaurants.restaurants} />
+            <div className="w-40 flex justify-between">
+              <button onClick={onPrevPage}>prev</button>
+              <span>{`${page} / ${data?.allRestaurants.totalPages}`}</span>
+              <button onClick={onNextPage}>next</button>
+            </div>
           </>
         )}
       </div>

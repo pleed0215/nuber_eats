@@ -14,7 +14,11 @@ export const Restaurants: React.FC<IRestaurants> = ({
   return (
     <div className="layout__container mx-auto grid lg:grid-cols-3 gap-x-5 gap-y-10 mt-8">
       {restaurants?.map((restaurant) => (
-        <RestaurantItem restaurant={restaurant} categoryShow={categoryShow} />
+        <RestaurantItem
+          key={restaurant.id}
+          restaurant={restaurant}
+          categoryShow={categoryShow}
+        />
       ))}
     </div>
   );
