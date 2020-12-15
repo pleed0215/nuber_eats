@@ -16,6 +16,7 @@ export const Categories: React.FC<ICategories> = ({ categories }) => {
           height={14}
           image={category.image}
           name={category.name}
+          slug={category.slug}
         />
       ))}
     </div>

@@ -13,3 +13,15 @@ export const RESTAURANT_FRAGMENT = gql`
     isPromoted
   }
 `;
+
+export const CATEGORY_FRAGMENT = gql`
+  fragment CategoryPart on Category {
+    id
+    slug
+    name
+    image
+    restaurantsOn {
+      count
+    }
+  }
+`;

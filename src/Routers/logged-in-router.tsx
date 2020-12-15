@@ -37,7 +37,7 @@ const ClientRoutes = [
   <Route key={6} path="/search">
     <SearchPage />
   </Route>,
-  <Route key={7} path="/category">
+  <Route key={7} path="/category/:slug">
     <CategoryPage />
   </Route>,
 ];
