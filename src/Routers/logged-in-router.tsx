@@ -11,7 +11,7 @@ import { Header } from "../components/header";
 import { useMe } from "../hooks/useMe";
 import { NotFound } from "../pages/404";
 import { CategoryPage } from "../pages/client/category";
-import { Restaurants } from "../pages/client/restaurants";
+import { RestaurantsPage } from "../pages/client/restaurants";
 import { SearchPage } from "../pages/client/search";
 import { LogOutPage } from "../pages/user/logout";
 import { EditProfile } from "../pages/user/me.page";
@@ -20,7 +20,7 @@ import { VerificationPage } from "../pages/user/verification.page";
 
 const ClientRoutes = [
   <Route key={1} path="/" exact>
-    <Restaurants />
+    <RestaurantsPage />
   </Route>,
   <Route key={2} path="/verification">
     <VerificationPage />
@@ -39,7 +39,7 @@ const ClientRoutes = [
   </Route>,
   <Route key={7} path="/category">
     <CategoryPage />
-  </Route>
+  </Route>,
 ];
 
 export const LoggedInRouter = () => {

@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { HelmetOnlyTitle } from "../../components/helmet.onlytitle";
 import { Categories } from "../../components/categories";
-import { Restaurants as AllRestaurants } from "../../components/restaurants";
+import { Restaurants } from "../../components/restaurants";
 
 // backend에 page를 Number로 주는 바람에... page type이 Float이다.. 나중에 수정해야 한다.
 const GQL_RESTAURANTS = gql`
@@ -51,7 +51,7 @@ interface ISearchForm {
   searchTerm: string;
 }
 
-export const Restaurants = () => {
+export const RestaurantsPage = () => {
   const history = useHistory();
   const { register, handleSubmit, getValues } = useForm<ISearchForm>();
   const { data, loading, error } = useQuery<
@@ -86,7 +86,7 @@ export const Restaurants = () => {
         {!loading && (
           <>
             <Categories categories={data?.allCategories.categories} />
-            <AllRestaurants restaurants={data?.allRestaurants.restaurants} />
+            <Restaurants restaurants={data?.allRestaurants.restaurants} />
           </>
         )}
       </div>
