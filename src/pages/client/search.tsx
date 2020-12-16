@@ -6,6 +6,7 @@ import {
   QuerySearchByTermVariables,
 } from "../../codegen/QuerySearchByTerm";
 import { HelmetOnlyTitle } from "../../components/helmet.onlytitle";
+import { Restaurants } from "../../components/restaurants";
 import { RESTAURANT_FRAGMENT } from "../../fragments";
 import { useQueryParam } from "../../hooks/useQueryParam";
 
@@ -18,6 +19,10 @@ const GQL_SEARCH_BY_TERM = gql`
       countTotalItems
       restaurants {
         ...RestaurantPart
+        category {
+          name
+          slug
+        }
       }
     }
   }
@@ -45,14 +50,23 @@ export const SearchPage: React.FC = () => {
         },
       });
       setTerm(inputTerm);
-      console.log(loading, data, error);
     }
   }, [loading]);
 
   return (
     <div>
-      <HelmetOnlyTitle title={`Searching ${term}`} />
-      <h1>{term}</h1>
+      <HelmetOnlyTitle title={`Searching term: "${term}"`} />
+      <div className="w-full">
+        {loading ? (
+          <h1>Loading...</h1>
+        ) : (
+          <Restaurants
+            restaurants={data?.searchRestaurantByName.restaurants}
+            categoryShow={true}
+            title={`Searching: "${term}" (Found: ${data?.searchRestaurantByName.countTotalItems})`}
+          />
+        )}
+      </div>
     </div>
   );
 };

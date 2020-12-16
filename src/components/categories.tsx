@@ -8,10 +8,10 @@ interface ICategories {
 
 export const Categories: React.FC<ICategories> = ({ categories }) => {
   return (
-    <div className="w-full flex justify-around items-center">
+    <div className="w-full flex justify-around items-center mb-5">
       {categories?.map((category) => (
         <CategoryItem
-          key={category.name}
+          key={category.id}
           width={14}
           height={14}
           image={category.image}

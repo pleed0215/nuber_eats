@@ -5,6 +5,7 @@ import {
   QueryCategory,
   QueryCategoryVariables,
 } from "../../codegen/QueryCategory";
+import { HelmetOnlyTitle } from "../../components/helmet.onlytitle";
 import { Restaurants } from "../../components/restaurants";
 
 import { CATEGORY_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
@@ -26,6 +27,11 @@ const GQL_QUERY_CATEGORY = gql`
       }
       restaurants {
         ...RestaurantPart
+        category {
+          id
+          name
+          slug
+        }
       }
     }
   }
@@ -46,12 +52,14 @@ export const CategoryPage = () => {
 
   return (
     <div className="w-full">
+      <HelmetOnlyTitle title={`Category:`} />
       {loading ? (
         <h1>Loading...</h1>
       ) : (
         <Restaurants
           restaurants={data?.category.restaurants}
           categoryShow={false}
+          title={`Category: ${data?.category.category?.name}`}
         />
       )}
     </div>

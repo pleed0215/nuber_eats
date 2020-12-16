@@ -11,6 +11,7 @@ export interface QuerySearchByTerm_searchRestaurantByName_restaurants_category {
   __typename: "Category";
   id: number;
   name: string;
+  slug: string;
 }
 
 export interface QuerySearchByTerm_searchRestaurantByName_restaurants {

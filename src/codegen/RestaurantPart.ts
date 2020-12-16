@@ -11,6 +11,7 @@ export interface RestaurantPart_category {
   __typename: "Category";
   id: number;
   name: string;
+  slug: string;
 }
 
 export interface RestaurantPart {

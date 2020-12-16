@@ -32,6 +32,7 @@ export interface QueryRestaurants_allCategories {
 export interface QueryRestaurants_allRestaurants_restaurants_category {
   __typename: "Category";
   name: string;
+  slug: string;
 }
 
 export interface QueryRestaurants_allRestaurants_restaurants {

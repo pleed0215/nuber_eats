@@ -25,6 +25,7 @@ export interface QueryCategory_category_restaurants_category {
   __typename: "Category";
   id: number;
   name: string;
+  slug: string;
 }
 
 export interface QueryCategory_category_restaurants {

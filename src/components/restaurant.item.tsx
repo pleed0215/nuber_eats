@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { QueryRestaurants_allRestaurants_restaurants } from "../codegen/QueryRestaurants";
 
 interface IRestaurantItem {
@@ -18,10 +19,12 @@ export const RestaurantItem: React.FC<IRestaurantItem> = ({
     <h3 className="text-xl font-medium border-b border-gray-400 pb-2 mb-3">
       {restaurant?.name}
     </h3>
-    {categoryShow && (
-      <span className="px-2 py-1 bg-lime-600 text-md text-white rounded-xl">
-        {restaurant?.category?.name}
-      </span>
+    {categoryShow && restaurant?.category?.name && (
+      <Link to={`/category/${restaurant?.category?.slug}`}>
+        <span className="px-2 py-1 bg-lime-600 text-md text-white rounded-xl">
+          {restaurant?.category?.name}
+        </span>
+      </Link>
     )}
   </div>
 );

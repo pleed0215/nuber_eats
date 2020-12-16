@@ -8,6 +8,7 @@ export const RESTAURANT_FRAGMENT = gql`
     category {
       id
       name
+      slug
     }
     address
     isPromoted

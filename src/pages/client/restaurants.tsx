@@ -41,6 +41,7 @@ const GQL_RESTAURANTS = gql`
         isPromoted
         category {
           name
+          slug
         }
       }
     }
@@ -62,7 +63,6 @@ export const RestaurantsPage = () => {
 
   const onPrevPage = () => setPage(page > 1 ? page - 1 : 1);
   const onNextPage = () => {
-    console.log(data?.allRestaurants.totalPages);
     if (data?.allRestaurants.totalPages)
       setPage(
         page < data?.allRestaurants.totalPages
@@ -77,6 +77,8 @@ export const RestaurantsPage = () => {
       search: `?term=${searchTerm}`,
     });
   };
+
+  console.log(data?.allRestaurants.restaurants);
 
   return (
     <div className="w-full">
@@ -95,7 +97,7 @@ export const RestaurantsPage = () => {
         />
       </form>
       <div className="layout__container flex flex-col justify-center items-center mt-10">
-        {!loading && (
+        {!loading && data && (
           <>
             <Categories categories={data?.allCategories.categories} />
             <Restaurants restaurants={data?.allRestaurants.restaurants} />
