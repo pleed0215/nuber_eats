@@ -52,7 +52,7 @@ export const CategoryPage = () => {
 
   return (
     <div className="w-full">
-      <HelmetOnlyTitle title={`Category:`} />
+      <HelmetOnlyTitle title={`Category: ${data?.category.category?.name}`} />
       {loading ? (
         <h1>Loading...</h1>
       ) : (
