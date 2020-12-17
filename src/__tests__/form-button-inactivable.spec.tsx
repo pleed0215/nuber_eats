@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 import React from "react";
-import { FormButtonInactivable } from "../form-button-inactivable";
+import { FormButtonInactivable } from "../components/form-button-inactivable";
 
 describe("<FormButtonInactivable />", () => {
   it("Should render OK with props", () => {
