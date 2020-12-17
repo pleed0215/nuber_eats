@@ -40,7 +40,8 @@
     "prestart": "rimraf src/codegen && apollo client:codegen src/codegen --target typescript --outputFlat",
     "start": "craco start",
     "build": "craco build",
-    "test": "craco test",
+    "test": "craco test --verbose",
+    "test:cov": "npm run test -- --coverage --watchAll=false",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -63,5 +64,12 @@
   },
   "devDependencies": {
     "@types/minio": "^7.0.6"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/components/**/*.tsx",
+      "src/pages/**/*.tsx",
+      "src/routers/**/*.tsx"
+    ]
   }
 }

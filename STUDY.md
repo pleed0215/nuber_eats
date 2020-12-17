@@ -450,3 +450,78 @@ const [queryReadyToStart, { loading, data, error }] = useLazyQuery<
 
 코드 예시..
 queryReadyToStart를 호출하면 쿼링이 시작된다.
+
+## 4. Client/Restaurant
+
+- 순전히 front end인데 딱히 적을 부분은 없었다.
+
+## 5. Test
+
+- backend와 마찬가지로 jest를 이용하는데, create-react-app이라는 jest 설정된 패키지를 사용하는 모양이다.
+- package.json에 추가.
+
+```json
+  "jest": {
+    "collectCoverageFrom": [
+      ".src/components/**/*.tsx",
+      ".src/pages/**/*.tsx",
+      ".src/routers/**/*.tsx"
+    ]
+  }
+```
+
+### App.spec.tsx
+
+```ts
+import { render } from "@testing-library/react";
+import React from "react";
+
+describe("<App />", () => {
+  it("redners OK", () => {
+    render;
+  });
+});
+```
+
+이 코드에서 보면 render에서 주목해야 할 것이 원래는, ReactDOM에서 import해서 실제 document에 rendering을 해주는 것인데, testing library에서 가져와서 render하는 즉, 가짜 rendering이라 보면 될 것 같다. 유사 렌더링.
+
+- 처음 App을 테스트 해보면, apollo client 관련된 에러가 나오는데, 여기서는 신경 안써야 한다고 하더라.
+- 왜냐하면 우리가 집중하는 부분은 react component들이기 때문...
+- 그래서 apollo client관련된 부분은 mocking을 해야 한다.
+
+App.test.tsx에서..
+
+```ts
+jest.mock("./routers/logged-out-router", () => {
+  return {
+    LoggedOutRouter: () => <span>logged-out</span>,
+  };
+});
+```
+
+LoggedOutRouter를 mocking하는 부분..
+
+#### render function
+
+- ReactDOM을 mocking한 render는 많은 함수를 가지고 있는 오브젝트이다. 강의에서는 그 중 debug를 호출해보는데, debug는 component들을 다 출력해주더라.
+
+- getByText
+  - text를 테스트 하는 함수. 입력된 텍스트와 출력된 테스트가 같지 않으면 에러가 발생한다.
+
+#### react component update in test
+
+- isLoggedInVar를 업데이트 해줘야 logged in으로 들어갈 수 있는데, 이부분에서 에러가 발생한다고 강의에서 나오지만, 나는 발생하지 않았는데 혹시 이것이 버전 업이 되면서 해결된 문제인가 싶긴하지만 일단 강의를 따라 가기로 하였다.
+
+```ts
+await waitFor(() => {
+  isLoggedInVar(true);
+});
+```
+
+- 이렇게 해줘야 한다고 한다.
+
+#### const { container } = render ...
+
+- vanilla js html element를 return 해준다고 한다.
+- expect(container.firstChild).to~~~
+  - 이런식으로 testing해주면 된다.

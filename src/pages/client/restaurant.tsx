@@ -1,4 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
+import { faHome } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Link, useParams } from "react-router-dom";
 import {
@@ -60,11 +62,12 @@ export const Restaurant = () => {
               <Link
                 to={`/category/${data.restaurant.restaurant?.category?.slug}`}
               >
-                <h4 className="text-sm font-light pl-20 flex mb-2">
+                <h4 className="text-sm font-light pl-20 flex mb-2 underline">
                   {data?.restaurant.restaurant?.category?.name}
                 </h4>
               </Link>
-              <h4 className="text-sm font-light pl-20 flex">
+              <h4 className="text-sm font-light pl-20 flex items-center">
+                <FontAwesomeIcon className="mr-2" icon={faHome} />
                 {data?.restaurant.restaurant?.address}
               </h4>
             </div>

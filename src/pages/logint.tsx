@@ -11,7 +11,6 @@ import { EMAIL_REGEX } from "../utils";
 import nuberLogo from "../images/eats-logo.svg";
 import { FormButtonInactivable } from "../components/form-button-inactivable";
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 import { authTokenVar, isLoggedInVar } from "../apollo";
 import { TOKEN_NAME } from "../gloabl.constant";
 import { HelmetOnlyTitle } from "../components/helmet.onlytitle";
