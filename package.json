@@ -21,6 +21,7 @@
     "@types/react-router-dom": "^5.1.6",
     "apollo": "^2.31.2",
     "autoprefixer": "^9.8.6",
+    "cypress": "^6.1.0",
     "graphql": "^15.4.0",
     "minio": "^7.0.17",
     "postcss": "^7.0.35",
@@ -63,6 +64,7 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/cypress": "^7.0.3",
     "@types/minio": "^7.0.6"
   },
   "jest": {

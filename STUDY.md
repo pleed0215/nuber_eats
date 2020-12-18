@@ -525,3 +525,18 @@ await waitFor(() => {
 - vanilla js html element를 return 해준다고 한다.
 - expect(container.firstChild).to~~~
   - 이런식으로 testing해주면 된다.
+
+--- 잠깐 보류
+
+## 6. Cypress
+
+> npm install cypress
+
+하고 나서, example 지우고..
+cypress 폴더에서 tsconfig.json을 만들자.
+cypress 폴더에서 사용하는 tsconfig는 좀 다르다고 한다.
+
+npm install --save-dev @testing-library/cypress
+
+- testing library 사용하여 findBy.. 이런 류의 함수를 사용 할 때에는 chaining을 하면 안된다고 한다...
+- 코드 참고하자.
