@@ -540,3 +540,7 @@ npm install --save-dev @testing-library/cypress
 
 - testing library 사용하여 findBy.. 이런 류의 함수를 사용 할 때에는 chaining을 하면 안된다고 한다...
 - 코드 참고하자.
+
+### localStorage testing
+
+> cy.window().its("localStorage.nuber_token").should("be.a", "string");

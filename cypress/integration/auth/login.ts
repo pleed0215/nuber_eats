@@ -27,6 +27,16 @@ describe("First test", () => {
     //cy.get(".auth__form_button")
     cy.findByRole("button").should("have.prop", "disabled");
   });
+
+  it("Can log in", () => {
+    cy.visit("/");
+    cy.findByPlaceholderText(/email/i).type(CLIENT_ID);
+    cy.findByPlaceholderText(/password/i).type(CLIENT_PW);
+    cy.findByRole("button").should("not.have.a.property", "disabled");
+    cy.findByRole("button").click();
+    cy.window().its("localStorage.nuber_token").should("be.a", "string");
+  });
+  
 });
 
 /*
