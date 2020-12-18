@@ -1,5 +1,6 @@
 describe("Create Account", () => {
   const user = cy;
+  const titleMaker = (title: string):string => `${title} | Nuber eats`;
   it("should see email validation error.", () => {
     user.visit("/");
     user.findByText(/create/i).click();
@@ -26,20 +27,35 @@ describe("Create Account", () => {
       .should("have.text", "Password too short, must be over 8");
   });
   it("should create accound and can login", () => {
+    
+    
+    user.intercept("http://lednas.yoyang.io:32789/graphql", (req) => {
+      const { operationName } = req.body;
+      if (operationName === "CreateUser") {
+      req.reply( res => {
+        res.send({
+          data:{
+            createUser:{
+              ok:false,
+              error:null,
+              __typename:"CreateUserOutput"
+            }
+          }
+        });
+      });
+      }
+    });
     user.visit("/");
     user.findByText(/create/i).click();
 
-    user.findByPlaceholderText(/email/i).type("email2@test.test");
+    user.findByPlaceholderText(/email/i).type("email3@test.test");
     user
       .findByPlaceholderText(/password/i)
       .type("testpassword")
       .blur();
     user.findByRole("button").click();
-    user.wait(5000);
-    cy.findByPlaceholderText(/email/i).type("email2@test.test");
-    cy.findByPlaceholderText(/password/i).type("testpassword");
-    cy.findByRole("button").should("not.have.a.property", "disabled");
-    cy.findByRole("button").click();
-    cy.window().its("localStorage.nuber_token").should("be.a", "string");
+    user.wait(1000);
+    // @ts-ignore
+    user.login('email3@test.test', 'testpassword');
   });
 });

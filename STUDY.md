@@ -544,3 +544,23 @@ npm install --save-dev @testing-library/cypress
 ### localStorage testing
 
 > cy.window().its("localStorage.nuber_token").should("be.a", "string");
+
+### intercept
+- 사실 매번 테스트때마다 아이디가 생성되어야 한다면 그것도 문제이다. 우리는 백엔드를 테스트하는 것이 아니기 때문에 웬만하면, faking 된 데이터를 주는 것이 좋다.
+
+그래서 사용하는 것이 intercept
+- 모든 request에 대해서 intercept하면 안되기 때문에 일부만 intercept하는 것이 좋음.
+
+
+### Custom command
+
+- 굉장히 쉽게 custom command를 추가할 수 있다.
+```ts
+ Cypress.Commands.add("assertLoggedIn", () => {
+    cy.window().its("localStorage.nuber_token").should("be.a", "string");
+})
+```
+cypress/support/commands.ts에 보면 주석으로 잘 설명되어 있다.
+혹시나 ts가 아닌 js라면... 확장자를 수정해주면 된다.
+
+- login part가 반복되기 때문에 custom command로 만들어 놓았다 code확인하면 된다.
