@@ -546,32 +546,35 @@ npm install --save-dev @testing-library/cypress
 > cy.window().its("localStorage.nuber_token").should("be.a", "string");
 
 ### intercept
+
 - 사실 매번 테스트때마다 아이디가 생성되어야 한다면 그것도 문제이다. 우리는 백엔드를 테스트하는 것이 아니기 때문에 웬만하면, faking 된 데이터를 주는 것이 좋다.
 
 그래서 사용하는 것이 intercept
+
 - 모든 request에 대해서 intercept하면 안되기 때문에 일부만 intercept하는 것이 좋음.
 
 - post의 경우 이렇게도 할 수 있는 모양..
-```ts
-      user.intercept("POST", "http://lednas.yoyang.io:32789/graphql", req => {
-    
-            const { operationName } = req.body;
-            if (operationName === "MutationUpdateProfile") {
-                // @ts-ignore
-                req.body?.variables.update.email = "email3@test.test";
-            }
-        })
-```
 
+```ts
+user.intercept("POST", "http://lednas.yoyang.io:32789/graphql", (req) => {
+  const { operationName } = req.body;
+  if (operationName === "MutationUpdateProfile") {
+    // @ts-ignore
+    req.body?.variables.update.email = "email3@test.test";
+  }
+});
+```
 
 ### Custom command
 
 - 굉장히 쉽게 custom command를 추가할 수 있다.
+
 ```ts
- Cypress.Commands.add("assertLoggedIn", () => {
-    cy.window().its("localStorage.nuber_token").should("be.a", "string");
-})
+Cypress.Commands.add("assertLoggedIn", () => {
+  cy.window().its("localStorage.nuber_token").should("be.a", "string");
+});
 ```
+
 cypress/support/commands.ts에 보면 주석으로 잘 설명되어 있다.
 혹시나 ts가 아닌 js라면... 확장자를 수정해주면 된다.
 
@@ -579,32 +582,41 @@ cypress/support/commands.ts에 보면 주석으로 잘 설명되어 있다.
 - jest 처럼 beforeEach, beforeAll 이 있다.
 
 ### fixture
+
 cypress 폴더 안에 보면, fixture라는 폴더가 있다.
 우버이츠 강의에 따르면(#19.7 5:40), testing하다보면 data intercepting을 여러번 할 경우가 있는데, 그럴 때 사용하는 것이라 한다.
 
 1. 첫번째 스텝으로는 fixture 안에 intergration과 마찬가지의 구조로 auth폴더를 만들어 주고, 안에 create_account.json 파일도 만들어준다.
 
 2. create_account.ts에서 intercepting한 data를 json화 해서 create_account.json에 넣어준다.
+
 ```json
 // fixture/auth/create_account.json
 {
-    "data":{
-    "createUser":{
-      "ok":false,
-      "error":null,
-      "__typename":"CreateUserOutput"
+  "data": {
+    "createUser": {
+      "ok": false,
+      "error": null,
+      "__typename": "CreateUserOutput"
     }
   }
 }
 ```
 
-
 3. intercepting할 때 주는 data를 아래와 같이 주면 된다.
+
 ```ts
 // intergration/auth/create_account.ts
-    req.reply( res => {
-      res.send({
-        fixture: "auth/create_account.json"
-      });
-    });
+req.reply((res) => {
+  res.send({
+    fixture: "auth/create_account.json",
+  });
+});
 ```
+
+## 7. Order Dash board
+
+### 1. routes modify
+
+- 기존의 routes들을 조금 변형해서 오브젝트 타입으로..
+- 니코의 코드와는 조금 다르게 했다. tyepscript를 좀더 파고 싶어서..

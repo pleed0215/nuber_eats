@@ -55,8 +55,8 @@ interface ISearchForm {
 export const RestaurantsPage = () => {
   const history = useHistory();
   const [page, setPage] = useState(1);
-  const { register, handleSubmit, getValues } = useForm<ISearchForm>();
-  const { data, loading, error } = useQuery<
+  const { register, handleSubmit } = useForm<ISearchForm>();
+  const { data, loading } = useQuery<
     QueryRestaurants,
     QueryRestaurantsVariables
   >(GQL_RESTAURANTS, { variables: { page } });

@@ -41,14 +41,14 @@ const GQL_QUERY_CATEGORY = gql`
 
 export const CategoryPage = () => {
   const { slug } = useParams<IParams>();
-  const { data, error, loading } = useQuery<
-    QueryCategory,
-    QueryCategoryVariables
-  >(GQL_QUERY_CATEGORY, {
-    variables: {
-      slug,
-    },
-  });
+  const { data, loading } = useQuery<QueryCategory, QueryCategoryVariables>(
+    GQL_QUERY_CATEGORY,
+    {
+      variables: {
+        slug,
+      },
+    }
+  );
 
   return (
     <div className="w-full">

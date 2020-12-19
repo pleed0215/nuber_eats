@@ -14,36 +14,63 @@ import { CategoryPage } from "../pages/client/category";
 import { Restaurant } from "../pages/client/restaurant";
 import { RestaurantsPage } from "../pages/client/restaurants";
 import { SearchPage } from "../pages/client/search";
+import { MyRestaurant } from "../pages/restaurant/my.restaurant";
 import { LogOutPage } from "../pages/user/logout";
 import { EditProfile } from "../pages/user/me.page";
 import { UpdatePassword } from "../pages/user/password.page";
 import { VerificationPage } from "../pages/user/verification.page";
 
-const ClientRoutes = [
-  <Route key={1} path="/" exact>
-    <RestaurantsPage />
-  </Route>,
-  <Route key={2} path="/verification">
-    <VerificationPage />
-  </Route>,
-  <Route key={3} path="/me">
-    <EditProfile />
-  </Route>,
-  <Route key={4} path="/password">
-    <UpdatePassword />
-  </Route>,
-  <Route key={5} path="/logout">
-    <LogOutPage />
-  </Route>,
-  <Route key={6} path="/search">
-    <SearchPage />
-  </Route>,
-  <Route key={7} path="/category/:slug">
-    <CategoryPage />
-  </Route>,
-  <Route key={8} path="/restaurant/:id">
-    <Restaurant />
-  </Route>,
+interface IRouteItem {
+  path: string;
+  component: React.FC;
+  exact?: boolean;
+}
+
+const clientRoutes: IRouteItem[] = [
+  {
+    path: "/",
+    component: RestaurantsPage,
+    exact: true,
+  },
+  {
+    path: "/search",
+    component: SearchPage,
+  },
+  {
+    path: "/category/:slug",
+    component: CategoryPage,
+  },
+  {
+    path: "/restaurant/:id",
+    component: Restaurant,
+  },
+];
+
+const ownerRoutes: IRouteItem[] = [
+  {
+    path: "/",
+    component: MyRestaurant,
+    exact: true,
+  },
+];
+
+const commonRoutes: IRouteItem[] = [
+  {
+    path: "/verification",
+    component: VerificationPage,
+  },
+  {
+    path: "/me",
+    component: EditProfile,
+  },
+  {
+    path: "/password",
+    component: UpdatePassword,
+  },
+  {
+    path: "/logout",
+    component: LogOutPage,
+  },
 ];
 
 export const LoggedInRouter = () => {
@@ -67,7 +94,35 @@ export const LoggedInRouter = () => {
     <Router>
       <Header />
       <Switch>
-        {data?.me?.role === UserRole.Client && ClientRoutes}
+        {commonRoutes.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            exact={Boolean(route.exact)}
+          >
+            <route.component />
+          </Route>
+        ))}
+        {data?.me?.role === UserRole.Client &&
+          clientRoutes.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              exact={Boolean(route.exact)}
+            >
+              <route.component />
+            </Route>
+          ))}
+        {data?.me?.role === UserRole.Owner &&
+          ownerRoutes.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              exact={Boolean(route.exact)}
+            >
+              <route.component />
+            </Route>
+          ))}
         <Route>
           <NotFound />
         </Route>

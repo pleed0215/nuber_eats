@@ -33,7 +33,7 @@ export const SearchPage: React.FC = () => {
   const queryParam = useQueryParam();
   const history = useHistory();
   const [term, setTerm] = useState<string | null>(null);
-  const [queryReadyToStart, { loading, data, error }] = useLazyQuery<
+  const [queryReadyToStart, { loading, data }] = useLazyQuery<
     QuerySearchByTerm,
     QuerySearchByTermVariables
   >(GQL_SEARCH_BY_TERM);

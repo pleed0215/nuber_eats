@@ -45,6 +45,7 @@ export const EditProfile = () => {
             `,
             data: {
               email: getValues("email"),
+              role: getValues("role"),
               verified: false,
             },
           });
@@ -105,7 +106,12 @@ export const EditProfile = () => {
             <span className="auth__form_error">{errors.email.message}</span>
           )}
         </div>
-        <select className="auth__form_input" name="role" ref={register()}>
+        <select
+          className="auth__form_input"
+          name="role"
+          defaultValue={userData?.me?.role}
+          ref={register()}
+        >
           {Object.keys(UserRole).map((role) => (
             <option key={role}>{role}</option>
           ))}
