@@ -14,6 +14,7 @@ import { CategoryPage } from "../pages/client/category";
 import { Restaurant } from "../pages/client/restaurant";
 import { RestaurantsPage } from "../pages/client/restaurants";
 import { SearchPage } from "../pages/client/search";
+import { CreateRestaurant } from "../pages/restaurant/create.restaurant";
 import { MyRestaurant } from "../pages/restaurant/my.restaurant";
 import { LogOutPage } from "../pages/user/logout";
 import { EditProfile } from "../pages/user/me.page";
@@ -51,6 +52,10 @@ const ownerRoutes: IRouteItem[] = [
     path: "/",
     component: MyRestaurant,
     exact: true,
+  },
+  {
+    path: "/create-restaurant",
+    component: CreateRestaurant,
   },
 ];
 
