@@ -551,6 +551,18 @@ npm install --save-dev @testing-library/cypress
 그래서 사용하는 것이 intercept
 - 모든 request에 대해서 intercept하면 안되기 때문에 일부만 intercept하는 것이 좋음.
 
+- post의 경우 이렇게도 할 수 있는 모양..
+```ts
+      user.intercept("POST", "http://lednas.yoyang.io:32789/graphql", req => {
+    
+            const { operationName } = req.body;
+            if (operationName === "MutationUpdateProfile") {
+                // @ts-ignore
+                req.body?.variables.update.email = "email3@test.test";
+            }
+        })
+```
+
 
 ### Custom command
 
@@ -564,3 +576,35 @@ cypress/support/commands.ts에 보면 주석으로 잘 설명되어 있다.
 혹시나 ts가 아닌 js라면... 확장자를 수정해주면 된다.
 
 - login part가 반복되기 때문에 custom command로 만들어 놓았다 code확인하면 된다.
+- jest 처럼 beforeEach, beforeAll 이 있다.
+
+### fixture
+cypress 폴더 안에 보면, fixture라는 폴더가 있다.
+우버이츠 강의에 따르면(#19.7 5:40), testing하다보면 data intercepting을 여러번 할 경우가 있는데, 그럴 때 사용하는 것이라 한다.
+
+1. 첫번째 스텝으로는 fixture 안에 intergration과 마찬가지의 구조로 auth폴더를 만들어 주고, 안에 create_account.json 파일도 만들어준다.
+
+2. create_account.ts에서 intercepting한 data를 json화 해서 create_account.json에 넣어준다.
+```json
+// fixture/auth/create_account.json
+{
+    "data":{
+    "createUser":{
+      "ok":false,
+      "error":null,
+      "__typename":"CreateUserOutput"
+    }
+  }
+}
+```
+
+
+3. intercepting할 때 주는 data를 아래와 같이 주면 된다.
+```ts
+// intergration/auth/create_account.ts
+    req.reply( res => {
+      res.send({
+        fixture: "auth/create_account.json"
+      });
+    });
+```

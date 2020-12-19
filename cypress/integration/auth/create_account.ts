@@ -34,13 +34,7 @@ describe("Create Account", () => {
       if (operationName === "CreateUser") {
       req.reply( res => {
         res.send({
-          data:{
-            createUser:{
-              ok:false,
-              error:null,
-              __typename:"CreateUserOutput"
-            }
-          }
+          fixture: "auth/create_account.json"
         });
       });
       }

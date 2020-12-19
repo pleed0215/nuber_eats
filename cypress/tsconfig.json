@@ -11,5 +11,5 @@
     "types": ["cypress", "@testing-library/cypress"],
     "moduleResolution": "node"
   },
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts", "integration/user/edit_profile.tsx"]
 }
