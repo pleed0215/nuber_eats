@@ -1,12 +1,12 @@
 import { gql, useQuery } from "@apollo/client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { QueryMyRestaurants } from "../../codegen/QueryMyRestaurants";
 import { HelmetOnlyTitle } from "../../components/helmet.onlytitle";
 import { RestaurantItem } from "../../components/restaurant.item";
 import { RESTAURANT_FRAGMENT } from "../../fragments";
 
-const GQL_MYRESTAURANTS = gql`
+export const GQL_MYRESTAURANTS = gql`
   query QueryMyRestaurants {
     myRestaurants {
       ok
@@ -24,7 +24,7 @@ export const MyRestaurant = () => {
   const { data, loading } = useQuery<QueryMyRestaurants>(GQL_MYRESTAURANTS);
 
   return (
-    <div className="layout__container mt-20">
+    <div className="layout__container mt-20 pb-10">
       <HelmetOnlyTitle title="Your Restaruants" />
       <h1 className="text-3xl font-semibbold">My Restaurants</h1>
       {loading ? (
@@ -46,15 +46,15 @@ export const MyRestaurant = () => {
               </div>
             ) : (
               <div className="my-10">
+                <Link to="/create-restaurant">
+                  <p className="auth__form_button rounded-lg text-center mb-8">
+                    Create Restaurant
+                  </p>
+                </Link>
                 {data?.myRestaurants.ok &&
                   data?.myRestaurants?.restaurants?.map((r) => (
                     <RestaurantItem restaurant={r} categoryShow={false} />
                   ))}
-                <Link to="/create-restaurant">
-                  <p className="auth__form_button rounded-lg text-center">
-                    Create Restaurant
-                  </p>
-                </Link>
               </div>
             ))}
         </div>

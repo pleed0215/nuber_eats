@@ -74,7 +74,7 @@ export const LoginPage = () => {
             className="flex flex-col mt-2"
             onSubmit={handleSubmit(onSubmit)}
           >
-            <div className="flex flex-col">
+            <div className="auth__input_wrapper">
               <input
                 placeholder="Email"
                 name="email"
@@ -97,7 +97,7 @@ export const LoginPage = () => {
                 <span></span>
               )}
             </div>
-            <div className="flex flex-col">
+            <div className="auth__input_wrapper">
               <input
                 placeholder="Password"
                 name="password"

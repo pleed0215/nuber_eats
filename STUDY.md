@@ -620,3 +620,19 @@ req.reply((res) => {
 
 - 기존의 routes들을 조금 변형해서 오브젝트 타입으로..
 - 니코의 코드와는 조금 다르게 했다. tyepscript를 좀더 파고 싶어서..
+
+### 2. file upload
+
+- backend에 file upload 파트 추가.
+
+  - nestjs에 쉽게 파일 upload 모듈을 만들 수가 있어서..
+  - aws s3에 bucket을 만들었다.
+
+- 알아둘점.
+
+  - react form element는 enctype은 없고, encType은 있다.
+  - file 관련된 타입은 FileList이다.
+
+- 기본적으로 여기서 그냥 하면 CORS 에러가 난다.
+  - No Access Control Allow Origin
+  - 해결방법은 간단하게 main.ts에서 app.enableCors();를 추가하면 끝이다.

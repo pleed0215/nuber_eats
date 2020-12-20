@@ -34,22 +34,24 @@ export const EditProfile = () => {
   >(GQL_UPDATE_PROFILE, {
     onCompleted: async ({ updateProfile: { ok, error } }) => {
       if (ok) {
-        if (userData?.me?.email !== getValues("email")) {
-          client.writeFragment({
-            id: `User:${userData?.me?.id}`,
-            fragment: gql`
-              fragment VerifiedUser on User {
-                verified
-                email
-              }
-            `,
-            data: {
+        client.writeFragment({
+          id: `User:${userData?.me?.id}`,
+          fragment: gql`
+            fragment VerifiedUser on User {
+              verified
+              email
+              role
+            }
+          `,
+          data: {
+            ...(userData?.me?.email !== getValues("email") && {
               email: getValues("email"),
-              role: getValues("role"),
               verified: false,
-            },
-          });
-        }
+            }),
+            role: getValues("role"),
+          },
+        });
+
         toast.success("Updated your profile successfully.");
         history.push("/");
       } else {

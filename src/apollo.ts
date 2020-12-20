@@ -14,6 +14,7 @@ export const authTokenVar = makeVar(getLSToken());
 
 const httpLink = createHttpLink({
   uri: "http://lednas.yoyang.io:32789/graphql",
+  //uri: "http://localhost:4000/graphql",
 });
 
 const authLink = setContext((request, prevContext) => {
