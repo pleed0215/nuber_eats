@@ -637,3 +637,4 @@ req.reply((res) => {
   - No Access Control Allow Origin
   - 해결방법은 간단하게 backend의  main.ts에서 app.enableCors();를 추가하면 끝이다.
   
+message: "Variable "$input" got invalid value "5" at "input.price"; Float cannot represent non numeric value: "5""
