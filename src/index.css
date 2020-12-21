@@ -20,7 +20,7 @@ body,
 }
 
 .layout__container {
-  @apply w-full px-5 xl:px-0 max-w-screen-xl mx-auto;
+  @apply w-full px-5 xl:px-0 max-w-screen-lg mx-auto;
 }
 
 .auth__input_wrapper {

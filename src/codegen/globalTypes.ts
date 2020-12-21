@@ -13,6 +13,15 @@ export enum UserRole {
   Owner = "Owner",
 }
 
+export interface CreateDishInput {
+  name: string;
+  price: number;
+  photo?: string | null;
+  description: string;
+  options?: DishOptionType[] | null;
+  restaurantId: number;
+}
+
 export interface CreateRestaurantInput {
   name: string;
   coverImage: string;
@@ -24,6 +33,17 @@ export interface CreateUserInput {
   email: string;
   password: string;
   role: UserRole;
+}
+
+export interface DishChoiceType {
+  name: string;
+  extra?: number | null;
+}
+
+export interface DishOptionType {
+  name: string;
+  choices?: DishChoiceType[] | null;
+  extra?: number | null;
 }
 
 export interface UpdateProfileInput {

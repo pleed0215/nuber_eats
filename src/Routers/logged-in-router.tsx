@@ -15,11 +15,13 @@ import { Restaurant } from "../pages/client/restaurant";
 import { RestaurantsPage } from "../pages/client/restaurants";
 import { SearchPage } from "../pages/client/search";
 import { CreateRestaurant } from "../pages/restaurant/create.restaurant";
+import { MyRestaurants } from "../pages/restaurant/my.restaurants";
 import { MyRestaurant } from "../pages/restaurant/my.restaurant";
 import { LogOutPage } from "../pages/user/logout";
 import { EditProfile } from "../pages/user/me.page";
 import { UpdatePassword } from "../pages/user/password.page";
 import { VerificationPage } from "../pages/user/verification.page";
+import { CreateDish } from "../pages/restaurant/create.dish";
 
 interface IRouteItem {
   path: string;
@@ -50,12 +52,20 @@ const clientRoutes: IRouteItem[] = [
 const ownerRoutes: IRouteItem[] = [
   {
     path: "/",
-    component: MyRestaurant,
+    component: MyRestaurants,
     exact: true,
   },
   {
     path: "/create-restaurant",
     component: CreateRestaurant,
+  },
+  {
+    path: "/my-restaurant/:id/create-dish",
+    component: CreateDish,
+  },
+  {
+    path: "/my-restaurant/:id",
+    component: MyRestaurant,
   },
 ];
 

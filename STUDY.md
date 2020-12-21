@@ -635,4 +635,5 @@ req.reply((res) => {
 
 - 기본적으로 여기서 그냥 하면 CORS 에러가 난다.
   - No Access Control Allow Origin
-  - 해결방법은 간단하게 main.ts에서 app.enableCors();를 추가하면 끝이다.
+  - 해결방법은 간단하게 backend의  main.ts에서 app.enableCors();를 추가하면 끝이다.
+  

@@ -10,7 +10,7 @@ import {
 import { FormButtonInactivable } from "../../components/form-button-inactivable";
 import { HelmetOnlyTitle } from "../../components/helmet.onlytitle";
 import { RESTAURANT_FRAGMENT } from "../../fragments";
-import { GQL_MYRESTAURANTS } from "./my.restaurant";
+import { GQL_MYRESTAURANTS } from "./my.restaurants";
 
 const GQL_CREATE_RESTAURANT = gql`
   mutation MutationCreateRestaurant($input: CreateRestaurantInput!) {
@@ -46,19 +46,36 @@ export const CreateRestaurant = () => {
       if (ok) {
         // faking cache
         const currentQuery = client.readQuery({ query: GQL_MYRESTAURANTS });
+        const fakeData = currentQuery
+          ? {
+              myRestaurants: {
+                ...currentQuery?.myRestaurants,
+                count: currentQuery?.myRestaurants.count + 1,
+                restaurants: [
+                  {
+                    ...restaurant,
+                    __typename: "Restaurant",
+                  },
+                  ...currentQuery?.myRestaurants.restaurants,
+                ],
+              },
+            }
+          : {
+              myRestaurants: {
+                __typename: "MyRestaurantOutput",
+                ok: true,
+                error: null,
+                count: 1,
+                restaurants: {
+                  ...restaurant,
+                  __typename: "Restaurant",
+                },
+              },
+            };
+
         client.writeQuery({
           query: GQL_MYRESTAURANTS,
-          data: {
-            myRestaurants: {
-              ...currentQuery.myRestaurants,
-              restaurants: [
-                {
-                  ...restaurant,
-                },
-                ...currentQuery.myRestaurants.restaurants,
-              ],
-            },
-          },
+          data: fakeData,
         });
 
         toast.success("Your restaurant is successfully made.");

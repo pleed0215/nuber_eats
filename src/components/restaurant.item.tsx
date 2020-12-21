@@ -4,15 +4,17 @@ import { QueryRestaurants_allRestaurants_restaurants } from "../codegen/QueryRes
 
 interface IRestaurantItem {
   restaurant: QueryRestaurants_allRestaurants_restaurants | null | undefined;
+  linkPrefix?: string;
   categoryShow?: boolean;
 }
 
 export const RestaurantItem: React.FC<IRestaurantItem> = ({
   restaurant,
+  linkPrefix,
   categoryShow = true,
 }) => (
   <div className="">
-    <Link to={`/restaurant/${restaurant?.id}`}>
+    <Link to={`/${linkPrefix ? linkPrefix : "restaurant"}/${restaurant?.id}`}>
       <div
         className="py-28 bg-cover border border-gray-100 rounded-md"
         style={{ backgroundImage: `url(${restaurant?.coverImage})` }}

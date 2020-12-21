@@ -39,6 +39,7 @@
   },
   "scripts": {
     "prestart": "rimraf src/codegen && apollo client:codegen src/codegen --target typescript --outputFlat",
+    "apollo:codegen": "rimraf src/codegen && apollo client:codegen src/codegen --target typescript --outputFlat",
     "start": "craco start",
     "build": "craco build",
     "test": "craco test --verbose",

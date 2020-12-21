@@ -26,3 +26,21 @@ export const CATEGORY_FRAGMENT = gql`
     }
   }
 `;
+
+export const DISH_FRAGMENT = gql`
+  fragment DishPart on Dish {
+    id
+    name
+    price
+    photo
+    description
+    options {
+      name
+      extra
+      choices {
+        name
+        extra
+      }
+    }
+  }
+`;

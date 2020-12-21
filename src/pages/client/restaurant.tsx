@@ -13,7 +13,7 @@ interface IParam {
   id: string;
 }
 
-const GQL_RESTAURANT = gql`
+export const GQL_RESTAURANT = gql`
   query QueryRestaurant($id: Float!) {
     restaurant(id: $id) {
       ok
