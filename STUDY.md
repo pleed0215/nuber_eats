@@ -637,4 +637,12 @@ req.reply((res) => {
   - No Access Control Allow Origin
   - 해결방법은 간단하게 backend의  main.ts에서 app.enableCors();를 추가하면 끝이다.
   
-message: "Variable "$input" got invalid value "5" at "input.price"; Float cannot represent non numeric value: "5""
+### 3. Creating dish & options
+- dynamic 하게 options를 만든다.
+- js에서 이건 알아둬야 할 것 같은게..
+  ```js
+    const {a, b, c, ...rest} = someObject;
+
+    이렇게 하면 rest에는 a,b,c 를 제외한 나머지가 저장이 된다.
+  ```
+
