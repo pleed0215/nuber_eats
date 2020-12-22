@@ -1,8 +1,9 @@
 import { gql, useApolloClient, useMutation } from "@apollo/client";
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { useHistory, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { DishChoiceType, DishOptionType } from "../../codegen/globalTypes";
 import {
   MutationCreateDish,
   MutationCreateDishVariables,
@@ -32,11 +33,22 @@ const GQL_CREATE_DISH = gql`
   ${DISH_FRAGMENT}
 `;
 
+interface IChoice {
+  name: string;
+  extra: number;
+}
+
+interface IOptions {
+  name: string;
+  extra: number;
+  choices?: IChoice[] | null;
+}
 interface ICreateDishForm {
   name: string;
   price: number;
   description: string;
   file: FileList;
+  options: IOptions[];
 }
 
 interface IParams {
@@ -46,10 +58,7 @@ interface IParams {
 export const CreateDish: React.FC = () => {
   const client = useApolloClient();
   const history = useHistory();
-  const [dishOptions, setDishOptions] = useState<
-    MutationCreateDish_createDish_dish_options[]
-  >([]);
-  const [optionsCount, setOptionsCount] = useState<number>(0);
+
   const [createDish, { loading, data, error }] = useMutation<
     MutationCreateDish,
     MutationCreateDishVariables
@@ -92,29 +101,57 @@ export const CreateDish: React.FC = () => {
   const {
     register,
     formState,
-    unregister,
     handleSubmit,
     getValues,
+    control,
     errors,
   } = useForm<ICreateDishForm>({
     mode: "onChange",
+  });
+  const {
+    fields: optionFields,
+    append: appendOption,
+    remove: removeOption,
+  } = useFieldArray({
+    control,
+    name: "options",
   });
 
   const { id: restaurantId } = useParams<IParams>();
   const onSubmit = async () => {
     try {
-      const { name, price, description, file } = getValues();
+      const { name, price, description, file, options } = getValues();
+      const dishOptions: DishOptionType[] = [];
       const actualFile = file[0];
       const formBody = new FormData();
       formBody.append("file", actualFile);
+      options?.forEach((option) => {
+        const dishChoices: DishChoiceType[] | null = option?.choices
+          ? []
+          : null;
+
+        if (dishChoices) {
+          option?.choices?.forEach((choice) => {
+            dishChoices.push({
+              name: choice.name,
+              extra: +choice.extra,
+            });
+          });
+        }
+
+        dishOptions.push({
+          name: option.name,
+          extra: +option.extra,
+        });
+      });
       const { url: photo } = await (
         await fetch(`http://lednas.synology.me:32789/upload/`, {
           method: "POST",
           body: formBody,
         })
       ).json();
-
-      /*await createDish({
+      console.log(getValues());
+      await createDish({
         variables: {
           input: {
             name,
@@ -122,22 +159,24 @@ export const CreateDish: React.FC = () => {
             price: +price,
             photo,
             restaurantId: +restaurantId,
+            options: dishOptions,
           },
         },
-      });*/
+      });
+      history.goBack();
     } catch (error) {
       console.log(error);
     }
   };
 
   const onAddClicked = () => {
-    setOptionsCount(optionsCount + 1);
+    appendOption({
+      value: "",
+    });
   };
   const onDeleteClicked = (index) => {
     // @ts-ignore
-    unregister(`${index}-OptionName`);
-    // @ts-ignore
-    unregister(`${index}-OptionExtra`);
+    removeOption(index);
   };
 
   return (
@@ -204,7 +243,7 @@ export const CreateDish: React.FC = () => {
             Add Option
           </span>
           <div className="mb-2">
-            {optionsCount === 0 ? (
+            {optionFields.length === 0 ? (
               <div>
                 <p className="text-sm font-thin text-black">
                   No options now. Click above button if you need one.
@@ -212,12 +251,18 @@ export const CreateDish: React.FC = () => {
               </div>
             ) : (
               <div>
-                {Array.from(new Array(optionsCount)).map((_, index) => (
-                  <div className="border border-gray-500 p-5 mb-2">
+                {optionFields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="border border-gray-500 p-5 mb-2"
+                  >
                     <span className="inline-block mb-2 mr-4">
                       {`#${index + 1} Option`}
                     </span>
-                    <span className="cursor-pointer text-xs py-1 px-2 bg-red-300 text-red-600 rounded-md hover:bg-red-600 hover:text-red-300 transition duration-200">
+                    <span
+                      className="cursor-pointer text-xs py-1 px-2 bg-red-300 text-red-600 rounded-md hover:bg-red-600 hover:text-red-300 transition duration-200"
+                      onClick={() => onDeleteClicked(index)}
+                    >
                       Delete me
                     </span>
                     <div className="flex justify-around">
@@ -225,7 +270,7 @@ export const CreateDish: React.FC = () => {
                         <input
                           className="auth__form_input"
                           type="text"
-                          name={`${index}-OptionName`}
+                          name={`options[${index}].name`}
                           placeholder="Name"
                           ref={register({ required: true })}
                         />
@@ -234,9 +279,9 @@ export const CreateDish: React.FC = () => {
                         <input
                           className="auth__form_input"
                           type="number"
-                          name={`${index}-OptionExtra`}
+                          name={`options[${index}].extra`}
                           placeholder="Extra"
-                          ref={register({ required: true })}
+                          ref={register({ required: true, min: 0 })}
                         />
                       </div>
                     </div>

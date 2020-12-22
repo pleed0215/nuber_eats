@@ -54,6 +54,7 @@ export const MyRestaurants = () => {
                 {data?.myRestaurants.ok &&
                   data?.myRestaurants?.restaurants?.map((r) => (
                     <RestaurantItem
+                      key={r.id}
                       restaurant={r}
                       categoryShow={false}
                       linkPrefix="my-restaurant"
