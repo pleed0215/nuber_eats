@@ -16,7 +16,7 @@ export const RestaurantItem: React.FC<IRestaurantItem> = ({
   <div className="">
     <Link to={`/${linkPrefix ? linkPrefix : "restaurant"}/${restaurant?.id}`}>
       <div
-        className="py-28 bg-cover border border-gray-100 rounded-md"
+        className="py-28 bg-cover bg-center border border-gray-100 rounded-md"
         style={{ backgroundImage: `url(${restaurant?.coverImage})` }}
       ></div>
       <h3 className="text-xl font-medium border-b border-gray-400 pb-2 mb-3">

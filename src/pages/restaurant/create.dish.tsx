@@ -150,7 +150,7 @@ export const CreateDish: React.FC = () => {
           body: formBody,
         })
       ).json();
-      console.log(getValues());
+
       await createDish({
         variables: {
           input: {
@@ -206,20 +206,30 @@ export const CreateDish: React.FC = () => {
             type="number"
             placeholder="Price"
             name="price"
-            ref={register({ required: "Price is required" })}
+            ref={register({
+              required: "Price is required",
+              min: { value: 0, message: "Price must be over 0" },
+            })}
           />
         </div>
         <div className="auth__input_wrapper">
           <input
-            className="auth__form_input"
+            className={`auth__form_input ${
+              errors.description && "border-red-500"
+            }`}
             type="text"
             placeholder="Description"
             name="description"
             ref={register({
               required: "Category is required",
-              min: { value: 0, message: "Price must be over 0" },
+              minLength: 5,
             })}
           />
+          {errors.description && (
+            <span className="auth__form_error">
+              {errors.description.message}
+            </span>
+          )}
         </div>
         <div className="auth__input_wrapper">
           <label htmlFor="file" className="text-md italic self-start mb-1">

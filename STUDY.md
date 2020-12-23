@@ -635,14 +635,26 @@ req.reply((res) => {
 
 - 기본적으로 여기서 그냥 하면 CORS 에러가 난다.
   - No Access Control Allow Origin
-  - 해결방법은 간단하게 backend의  main.ts에서 app.enableCors();를 추가하면 끝이다.
-  
+  - 해결방법은 간단하게 backend의 main.ts에서 app.enableCors();를 추가하면 끝이다.
+
 ### 3. Creating dish & options
+
 - dynamic 하게 options를 만든다.
 - js에서 이건 알아둬야 할 것 같은게..
+
   ```js
     const {a, b, c, ...rest} = someObject;
 
     이렇게 하면 rest에는 a,b,c 를 제외한 나머지가 저장이 된다.
   ```
 
+- useFieldArray를 사용하면 쉽게 dynamic 필드를 만들 수 있다.
+
+### 4. Victory library.
+
+- 쉽게 차트를 만들 수 있는 라이브러리.
+
+### 5. date형식으로 만들기.
+
+2020-12-24T07:23:17.244Z 이런 형식으로 되어 있는 것을.. 흔히 알고 있는 date형식으로 바꾸고 싶으면..
+new Date("2020-12-24T07:23:17.244Z").toLocaleDateString()으로 해주면 된다.
