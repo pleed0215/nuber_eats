@@ -8,14 +8,13 @@ import {
   MutationUpdateDish,
   MutationUpdateDishVariables,
 } from "../../codegen/MutationUpdateDish";
-import { QueryMyRestaurant } from "../../codegen/QueryMyRestaurant";
+import { QueryDish } from "../../codegen/QueryDish";
 
 import { FormButtonInactivable } from "../../components/form-button-inactivable";
 import { HelmetOnlyTitle } from "../../components/helmet.onlytitle";
 import { DISH_FRAGMENT } from "../../fragments";
-import { useQueryParam } from "../../hooks/useQueryParam";
+
 import { GQL_MYRESTAURANT } from "./my.restaurant";
-import { GQL_MYRESTAURANTS } from "./my.restaurants";
 
 const GQL_UPDATE_DISH = gql`
   mutation MutationUpdateDish(
@@ -25,13 +24,23 @@ const GQL_UPDATE_DISH = gql`
     $options: [DishOptionType!]
     $dishId: Int!
   ) {
-    createDish(
+    updateDish(
       name: $name
       price: $price
       description: $description
       options: $options
       dishId: $dishId
     ) {
+      ok
+      error
+    }
+  }
+  ${DISH_FRAGMENT}
+`;
+
+const GQL_DISH = gql`
+  query QueryDish($id: Int!) {
+    getDish(dishId: $id) {
       ok
       error
       dish {
@@ -65,30 +74,26 @@ interface IParams {
 }
 
 export const UpdateDish: React.FC = () => {
-  const client = useApolloClient();
   const history = useHistory();
   const { restaurantId, dishId } = useParams<IParams>();
 
-  const { data: restaurantData } = useQuery<QueryMyRestaurant>(
-    GQL_MYRESTAURANT,
-    {
-      variables: {
-        id: +restaurantId,
-      },
-    }
-  );
+  const { data: dishData } = useQuery<QueryDish>(GQL_DISH, {
+    variables: {
+      id: +dishId,
+    },
+  });
 
-  const [updateDish, { loading, data, error }] = useMutation<
+  const [updateDish, { loading, data }] = useMutation<
     MutationUpdateDish,
     MutationUpdateDishVariables
   >(GQL_UPDATE_DISH, {
     onCompleted: (data: MutationUpdateDish) => {
-      if (data.createDish.ok) {
+      if (data.updateDish.ok) {
         toast.success("Dish successfully made.");
         history.goBack();
       } else {
         toast.error(
-          `While creating menu, an error occured. Message: ${data.createDish.error}`
+          `While creating menu, an error occured. Message: ${data.updateDish.error}`
         );
       }
     },
@@ -103,7 +108,9 @@ export const UpdateDish: React.FC = () => {
   } = useForm<IUpdateDishForm>({
     mode: "onChange",
     defaultValues: {
-      name: data,
+      name: dishData?.getDish?.dish?.name,
+      price: dishData?.getDish?.dish?.price,
+      description: dishData?.getDish?.dish?.description,
     },
   });
   const {
@@ -114,6 +121,8 @@ export const UpdateDish: React.FC = () => {
     control,
     name: "options",
   });
+
+  if (dishData) console.log(dishData);
 
   const onSubmit = async () => {
     try {
@@ -217,19 +226,7 @@ export const UpdateDish: React.FC = () => {
             </span>
           )}
         </div>
-        <div className="auth__input_wrapper">
-          <label htmlFor="file" className="text-md italic self-start mb-1">
-            Dish image
-          </label>
-          <input
-            className="auth__form_input"
-            id="file"
-            type="file"
-            name="file"
-            accept="image/*"
-            ref={register({ required: true })}
-          />
-        </div>
+
         <div className="border-t border-gray-600 mt-2 pt-2">
           <p className="text-xl italic">Dish options</p>
           <span
@@ -291,12 +288,9 @@ export const UpdateDish: React.FC = () => {
           isActivate={formState.isValid && !formState.isSubmitting}
           loading={loading}
         >
-          Create Dish
+          Update Dish
         </FormButtonInactivable>
       </form>
-      {data?.createDish.error && (
-        <p className="auth__form_error">{data.createDish.error}</p>
-      )}
     </div>
   );
 };
