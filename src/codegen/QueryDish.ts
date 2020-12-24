@@ -42,5 +42,5 @@ export interface QueryDish {
 }
 
 export interface QueryDishVariables {
-  id?: number | null;
+  id: number;
 }

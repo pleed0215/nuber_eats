@@ -58,14 +58,13 @@ export const UpdateRestaurant = () => {
     errors,
   } = useForm<IForm>({
     mode: "onChange",
-    defaultValues: {
-      name: data?.restaurant?.restaurant?.name,
-      address: data?.restaurant?.restaurant?.address,
-      category: data?.restaurant?.restaurant?.category?.name,
-    },
   });
 
-  console.log(formState);
+  if (data) {
+    setValue("name", data?.restaurant?.restaurant?.name);
+    setValue("address", data?.restaurant?.restaurant?.address);
+    setValue("category", data?.restaurant?.restaurant?.category?.name);
+  }
 
   const [updateRestaurant, { loading }] = useMutation<
     MutationUpdateRestaurant,

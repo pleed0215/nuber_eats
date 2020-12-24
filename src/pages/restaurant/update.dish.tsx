@@ -103,15 +103,11 @@ export const UpdateDish: React.FC = () => {
     formState,
     handleSubmit,
     getValues,
+    setValue,
     control,
     errors,
   } = useForm<IUpdateDishForm>({
     mode: "onChange",
-    defaultValues: {
-      name: dishData?.getDish?.dish?.name,
-      price: dishData?.getDish?.dish?.price,
-      description: dishData?.getDish?.dish?.description,
-    },
   });
   const {
     fields: optionFields,
@@ -122,7 +118,12 @@ export const UpdateDish: React.FC = () => {
     name: "options",
   });
 
-  if (dishData) console.log(dishData);
+  if (dishData) {
+    console.log(dishData);
+    setValue("name", dishData?.getDish?.dish?.name);
+    setValue("price", dishData?.getDish?.dish?.price);
+    setValue("description", dishData?.getDish?.dish?.description);
+  }
 
   const onSubmit = async () => {
     try {
