@@ -59,6 +59,14 @@ export interface UpdateProfileInput {
   role?: UserRole | null;
 }
 
+export interface UpdateRestaurantInput {
+  name?: string | null;
+  coverImage?: string | null;
+  address?: string | null;
+  categoryName?: string | null;
+  id: number;
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================

@@ -45,21 +45,38 @@ export const MyRestaurants = () => {
                 </Link>
               </div>
             ) : (
-              <div className="my-10">
+              <div>
                 <Link to="/create-restaurant">
                   <p className="auth__form_button rounded-lg text-center mb-8">
                     Create Restaurant
                   </p>
                 </Link>
-                {data?.myRestaurants.ok &&
-                  data?.myRestaurants?.restaurants?.map((r) => (
-                    <RestaurantItem
-                      key={r.id}
-                      restaurant={r}
-                      categoryShow={false}
-                      linkPrefix="my-restaurant"
-                    />
-                  ))}
+                <div className="layout__container grid lg:grid-cols-3 md:grid-cols-2  sm:grid-cols-1 gap-4 mt-10">
+                  {data?.myRestaurants.ok &&
+                    data?.myRestaurants?.restaurants?.map((r) => (
+                      <div key={r.id} className="flex flex-col">
+                        <RestaurantItem
+                          restaurant={r}
+                          categoryShow={false}
+                          linkPrefix="my-restaurant"
+                        />
+                        <div className="flex justify-around text-center">
+                          <Link
+                            className="w-1/3 bg-lime-200 text-lime-600 rounded-md px-3 py-1 hover:text-lime-200 hover:bg-lime-600 transition duration-200"
+                            to={`/my-restaurant/${r.id}/update`}
+                          >
+                            Edit
+                          </Link>
+                          <Link
+                            className="w-1/3 bg-red-200 text-red-600 rounded-md px-3 py-1 hover:text-red-200 hover:bg-red-600 transition duration-200"
+                            to=""
+                          >
+                            Remove
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
+                </div>
               </div>
             ))}
         </div>

@@ -7,7 +7,8 @@ import {
   QueryRestaurant,
   QueryRestaurantVariables,
 } from "../../codegen/QueryRestaurant";
-import { RESTAURANT_FRAGMENT } from "../../fragments";
+import { DishItem } from "../../components/dish.item";
+import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 
 interface IParam {
   id: string;
@@ -20,10 +21,14 @@ export const GQL_RESTAURANT = gql`
       error
       restaurant {
         ...RestaurantPart
+        dishes {
+          ...DishPart
+        }
       }
     }
   }
   ${RESTAURANT_FRAGMENT}
+  ${DISH_FRAGMENT}
 `;
 
 export const Restaurant = () => {
@@ -37,6 +42,7 @@ export const Restaurant = () => {
     },
   });
 
+  if (data) console.log(data);
   return (
     <div className="w-full flex justify-contern">
       {loading ? (
@@ -55,7 +61,7 @@ export const Restaurant = () => {
               backgroundImage: `url(${data?.restaurant.restaurant?.coverImage})`,
             }}
           >
-            <div className="w-1/3 bg-white py-4">
+            <div className="sm:w-2/3 md:w-1/2 xl:w-1/3 bg-white py-4 pr-4 opacity-95">
               <h1 className="text-2xl pl-20 flex mb-3 ">
                 {data?.restaurant.restaurant?.name}
               </h1>
@@ -71,6 +77,17 @@ export const Restaurant = () => {
                 {data?.restaurant.restaurant?.address}
               </h4>
             </div>
+          </div>
+          <div className="layout__container grid lg:grid-cols-3 md:grid-cols-2  sm:grid-cols-1 gap-4 mt-10">
+            {data?.restaurant.restaurant?.dishes?.map((dish) => (
+              <DishItem
+                key={dish.id}
+                name={dish.name}
+                price={dish.price}
+                description={dish.description}
+                photo={dish.photo}
+              />
+            ))}
           </div>
         </div>
       )}

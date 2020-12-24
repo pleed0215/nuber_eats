@@ -22,6 +22,8 @@ import { EditProfile } from "../pages/user/me.page";
 import { UpdatePassword } from "../pages/user/password.page";
 import { VerificationPage } from "../pages/user/verification.page";
 import { CreateDish } from "../pages/restaurant/create.dish";
+import { UpdateRestaurant } from "../pages/restaurant/update.restaurant";
+import { UpdateDish } from "../pages/restaurant/update.dish";
 
 interface IRouteItem {
   path: string;
@@ -60,8 +62,17 @@ const ownerRoutes: IRouteItem[] = [
     component: CreateRestaurant,
   },
   {
+    path: "/my-restaurant/:restaurantId/:dishId/update",
+    component: UpdateDish,
+    exact: true,
+  },
+  {
     path: "/my-restaurant/:id/create-dish",
     component: CreateDish,
+  },
+  {
+    path: "/my-restaurant/:id/update",
+    component: UpdateRestaurant,
   },
   {
     path: "/my-restaurant/:id",

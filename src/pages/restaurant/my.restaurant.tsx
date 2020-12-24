@@ -1,5 +1,11 @@
 import { gql, useQuery } from "@apollo/client";
-import { faHome } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEdit,
+  faHome,
+  faRecycle,
+  faRemoveFormat,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -119,28 +125,44 @@ export const MyRestaurant = () => {
               to={`/my-restaurant/${id}/create-dish`}
               className="mr-8 text-white bg-gray-800 py-3 px-10 rounded-md"
             >
-              Add Dish
+              Add Dish &rarr;
             </Link>
             <Link
               to=""
               className="text-white bg-lime-700 py-3 px-10 rounded-md"
             >
-              Buy Promotion
+              Buy Promotion &rarr;
             </Link>
           </div>
           <div className="mt-4 layout__container">
             {data?.restaurant?.restaurant?.dishes?.length === 0 ? (
               <div>No Dishes, please create your menus.</div>
             ) : (
-              <div className="w-full mx-auto grid xl:grid-cols-3 lg:grid-cols-2 sm:grid-cols-1 gap-x-5 gap-y-10">
+              <div className="layout__container grid lg:grid-cols-3 md:grid-cols-2  sm:grid-cols-1 gap-4 mt-10">
                 {data?.restaurant?.restaurant?.dishes?.map((dish) => (
-                  <DishItem
-                    key={dish.id}
-                    name={dish.name}
-                    description={dish.description}
-                    photo={dish.photo}
-                    price={dish.price}
-                  />
+                  <div key={dish.id} className="flex flex-col">
+                    <DishItem
+                      name={dish.name}
+                      description={dish.description}
+                      photo={dish.photo}
+                      price={dish.price}
+                    />
+                    <div className="flex justify-around text-center mt-2">
+                      <Link
+                        className="w-1/3 bg-lime-200 text-lime-600 rounded-md px-3 py-1 hover:text-lime-200 hover:bg-lime-600 transition duration-200"
+                        to={`/my-restaurant/${id}/${dish.id}/update`}
+                      >
+                        <FontAwesomeIcon icon={faEdit} /> Edit
+                      </Link>
+                      <Link
+                        className="w-1/3 bg-red-200 text-red-600 rounded-md px-3 py-1 hover:text-red-200 hover:bg-red-600 transition duration-200"
+                        to=""
+                      >
+                        <FontAwesomeIcon icon={faTrash} className="mr-1" />
+                        Remove
+                      </Link>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
