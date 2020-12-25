@@ -1,5 +1,6 @@
 import { gql, useApolloClient, useMutation } from "@apollo/client";
-import { createSourceEventStream } from "graphql";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useHistory, useParams } from "react-router-dom";
@@ -8,7 +9,6 @@ import { DishChoiceType, DishOptionType } from "../../codegen/globalTypes";
 import {
   MutationCreateDish,
   MutationCreateDishVariables,
-  MutationCreateDish_createDish_dish_options,
 } from "../../codegen/MutationCreateDish";
 import {
   QueryMyRestaurant,
@@ -162,7 +162,7 @@ export const CreateDish: React.FC = () => {
         })
       ).json();
 
-      await createDish({
+      /*await createDish({
         variables: {
           input: {
             name,
@@ -174,7 +174,9 @@ export const CreateDish: React.FC = () => {
           },
         },
       });
-      history.goBack();
+
+      history.goBack();*/
+      console.log(getValues());
     } catch (error) {
       console.log(error);
     }
@@ -205,7 +207,8 @@ export const CreateDish: React.FC = () => {
         isExist: true,
         choice: { name: "", extra: 0 },
       });
-      setOptionChoices(optionChoices);
+      console.log(optionChoices);
+      setOptionChoices([...optionChoices]);
     } else {
       setOptionChoices((current) => [
         ...current,
@@ -345,32 +348,44 @@ export const CreateDish: React.FC = () => {
                         />
                       </div>
                     </div>
-                    <div className="flex justify-around">
-                      {optionChoices.map((o, choiceIndex) => {
+                    <div className="flex flex-col justify-center items-start w-2/3 ml-20">
+                      {optionChoices.map((o) => {
                         if (o.optionIndex !== index) {
                           return <></>;
                         } else {
                           return o.choicesInfo?.map(
-                            (choice) =>
+                            (choice, choiceIndex) =>
                               choice.isExist && (
-                                <div className="flex justify-around">
-                                  <div className="auth__input_wrapper w-full mr-3">
+                                <div
+                                  key={`${makeChoiceString(
+                                    o.optionIndex,
+                                    choiceIndex
+                                  )}`}
+                                  className="flex justify-around items-center mt-2"
+                                >
+                                  <div className="w-1/6">
+                                    <span>Choice #{choiceIndex + 1}</span>
+                                  </div>
+                                  <div className="w-2/6 mr-3">
                                     <input
                                       className="auth__form_input"
                                       type="text"
-                                      name={`options[${index}].name`}
+                                      name={`options[${index}].choice[${choiceIndex}].name`}
                                       placeholder="Name"
                                       ref={register({ required: true })}
                                     />
                                   </div>
-                                  <div className="auth__input_wrapper w-full">
+                                  <div className=" w-2/6">
                                     <input
                                       className="auth__form_input"
                                       type="number"
-                                      name={`options[${index}].extra`}
+                                      name={`options[${index}].choice[${choiceIndex}].extra`}
                                       placeholder="Extra"
                                       ref={register({ required: true, min: 0 })}
                                     />
+                                  </div>
+                                  <div className="w-1/6 cursor-pointer text-xs p-1 text-center bg-red-300 text-red-600 rounded-md hover:bg-red-600 hover:text-red-300 transition duration-200 ml-3">
+                                    <FontAwesomeIcon icon={faTrashAlt} />
                                   </div>
                                 </div>
                               )
