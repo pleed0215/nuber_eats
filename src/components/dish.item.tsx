@@ -5,6 +5,7 @@ interface IDish {
   description?: string;
   price: number;
   photo?: string | null;
+  cursorPointer?: boolean;
 }
 
 export const DishItem: React.FC<IDish> = ({
@@ -12,9 +13,14 @@ export const DishItem: React.FC<IDish> = ({
   description,
   price,
   photo,
+  cursorPointer = false,
 }) => {
   return (
-    <div className="flex h-40 border border-gray-300 hover:border-gray-600 transition duration-200">
+    <div
+      className={`flex h-40 border border-gray-300 hover:border-gray-600 transition duration-200 ${
+        cursorPointer && "cursor-pointer"
+      }`}
+    >
       <div className="w-3/5 flex flex-col items-start justify-between p-4">
         <div className="w-full h-4/5">
           <p className="text-black font-normal text-md">{name}</p>

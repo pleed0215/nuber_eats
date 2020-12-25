@@ -1,8 +1,16 @@
-import { gql, useQuery } from "@apollo/client";
-import { faHome } from "@fortawesome/free-solid-svg-icons";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import {
+  faCartArrowDown,
+  faCartPlus,
+  faHome,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import React, { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import {
+  MutationCreateOrder,
+  MutationCreateOrderVariables,
+} from "../../codegen/MutationCreateOrder";
 import {
   QueryRestaurant,
   QueryRestaurantVariables,
@@ -31,8 +39,18 @@ export const GQL_RESTAURANT = gql`
   ${DISH_FRAGMENT}
 `;
 
+const GQL_ORDER = gql`
+  mutation MutationCreateOrder($input: CreateOrderItemInput) {
+    createOrder(input: $input) {
+      ok
+      error
+    }
+  }
+`;
+
 export const Restaurant = () => {
   const { id } = useParams<IParam>();
+  const [dishId, setDishId] = useState<number>(-1);
   const { data, loading, error } = useQuery<
     QueryRestaurant,
     QueryRestaurantVariables
@@ -41,6 +59,15 @@ export const Restaurant = () => {
       id: +id,
     },
   });
+
+  const [createOrder, { loading: loadingCreateOrder }] = useMutation<
+    MutationCreateOrder,
+    MutationCreateOrderVariables
+  >(GQL_ORDER);
+
+  const onDishClicked = (id) => {
+    setDishId(id);
+  };
 
   if (data) console.log(data);
   return (
@@ -80,15 +107,33 @@ export const Restaurant = () => {
           </div>
           <div className="layout__container grid lg:grid-cols-3 md:grid-cols-2  sm:grid-cols-1 gap-4 mt-10">
             {data?.restaurant.restaurant?.dishes?.map((dish) => (
-              <DishItem
-                key={dish.id}
-                name={dish.name}
-                price={dish.price}
-                description={dish.description}
-                photo={dish.photo}
-              />
+              <div key={dish.id} onClick={() => onDishClicked(dish.id)}>
+                <DishItem
+                  name={dish.name}
+                  price={dish.price}
+                  description={dish.description}
+                  photo={dish.photo}
+                  cursorPointer
+                />
+              </div>
             ))}
           </div>
+          {dishId >= 0 && (
+            <div className="absolute inset-0 w-full h-full bg-gray-600 bg-opacity-50 z-50 flex justify-center items-center">
+              <div className="flex flex-col w-1/3 max-w-sm h-1/2 border border-gray-600 rounded-lg">
+                <div className="w-full h-12 bg-lime-600 rounded-t-lg text-center flex items-center justify-center">
+                  <p className="text-white text-xl font-semibold italic">
+                    Start Order
+                  </p>
+                </div>
+                <div className="h-full bg-white"></div>
+                <div className="w-full h-12 flex justify-center items-center text-white bg-lime-600 rounded-b-lg">
+                  <FontAwesomeIcon icon={faCartPlus} className="mr-2" />
+                  Total
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

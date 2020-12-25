@@ -162,7 +162,7 @@ export const CreateDish: React.FC = () => {
         })
       ).json();
 
-      /*await createDish({
+      await createDish({
         variables: {
           input: {
             name,
@@ -175,8 +175,7 @@ export const CreateDish: React.FC = () => {
         },
       });
 
-      history.goBack();*/
-      console.log(getValues());
+      history.goBack();
     } catch (error) {
       console.log(error);
     }

@@ -22,13 +22,10 @@ import {
 } from "../../fragments";
 import {
   VictoryChart,
-  VictoryBar,
   VictoryAxis,
-  VictoryPie,
   VictoryVoronoiContainer,
   VictoryLine,
   VictoryTheme,
-  VictoryLabel,
   VictoryTooltip,
 } from "victory";
 
