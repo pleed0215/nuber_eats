@@ -16,9 +16,7 @@ import {
 import { FormButtonInactivable } from "../../components/form-button-inactivable";
 import { HelmetOnlyTitle } from "../../components/helmet.onlytitle";
 import { DISH_FRAGMENT } from "../../fragments";
-import { useQueryParam } from "../../hooks/useQueryParam";
 import { GQL_MYRESTAURANT } from "./my.restaurant";
-import { GQL_MYRESTAURANTS } from "./my.restaurants";
 
 const GQL_CREATE_DISH = gql`
   mutation MutationCreateDish($input: CreateDishInput!) {
@@ -55,9 +53,21 @@ interface IParams {
   id: string;
 }
 
+interface IChoiceInfo {
+  index: string;
+  isExist: boolean;
+  choice: IChoice;
+}
+
+interface IChoiceInput {
+  optionIndex: number;
+  choicesInfo?: IChoiceInfo[] | null;
+}
+
 export const CreateDish: React.FC = () => {
   const client = useApolloClient();
   const history = useHistory();
+  const optionChoices: IChoiceInput[] = [];
 
   const [createDish, { loading, data, error }] = useMutation<
     MutationCreateDish,
@@ -178,6 +188,36 @@ export const CreateDish: React.FC = () => {
     // @ts-ignore
     removeOption(index);
   };
+  const makeChoiceString = (index, choiceIndex) =>
+    `${index}-${choiceIndex} choice`;
+  const onAddChoiceClicked = (index) => {
+    const option = optionChoices.find((choice) => choice.optionIndex === index);
+    if (option) {
+      option.choicesInfo?.push({
+        index: makeChoiceString(index, option.choicesInfo?.length),
+        isExist: true,
+        choice: {
+          name: "",
+          extra: 0,
+        },
+      });
+    } else {
+      optionChoices.push({
+        optionIndex: index,
+        choicesInfo: [
+          {
+            index: makeChoiceString(index, 0),
+            isExist: true,
+            choice: {
+              name: "",
+              extra: 0,
+            },
+          },
+        ],
+      });
+    }
+    console.log(optionChoices);
+  };
 
   return (
     <div className="layout__container">
@@ -268,6 +308,12 @@ export const CreateDish: React.FC = () => {
                   >
                     <span className="inline-block mb-2 mr-4">
                       {`#${index + 1} Option`}
+                    </span>
+                    <span
+                      className="cursor-pointer text-xs py-1 px-2 bg-lime-300 text-lime-600 rounded-md hover:bg-lime-600 hover:text-lime-300 transition duration-200 mr-4"
+                      onClick={() => onAddChoiceClicked(index)}
+                    >
+                      Add choice
                     </span>
                     <span
                       className="cursor-pointer text-xs py-1 px-2 bg-red-300 text-red-600 rounded-md hover:bg-red-600 hover:text-red-300 transition duration-200"
