@@ -2,6 +2,7 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import {
   faCartArrowDown,
   faCartPlus,
+  faDoorClosed,
   faHome,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,6 +15,7 @@ import {
 import {
   QueryRestaurant,
   QueryRestaurantVariables,
+  QueryRestaurant_restaurant_restaurant_dishes,
 } from "../../codegen/QueryRestaurant";
 import { DishItem } from "../../components/dish.item";
 import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
@@ -50,7 +52,11 @@ const GQL_ORDER = gql`
 
 export const Restaurant = () => {
   const { id } = useParams<IParam>();
-  const [dishId, setDishId] = useState<number>(-1);
+  const [
+    dishInfo,
+    setDishInfo,
+  ] = useState<QueryRestaurant_restaurant_restaurant_dishes | null>(null);
+  const [totalPay, setTotalPay] = useState<number>(0);
   const { data, loading, error } = useQuery<
     QueryRestaurant,
     QueryRestaurantVariables
@@ -66,7 +72,13 @@ export const Restaurant = () => {
   >(GQL_ORDER);
 
   const onDishClicked = (id) => {
-    setDishId(id);
+    const dish = data?.restaurant.restaurant?.dishes?.find(
+      (dish) => dish.id === id
+    );
+    if (dish !== undefined) {
+      setDishInfo(dish);
+      setTotalPay(dish.price);
+    }
   };
 
   if (data) console.log(data);
@@ -118,18 +130,100 @@ export const Restaurant = () => {
               </div>
             ))}
           </div>
-          {dishId >= 0 && (
+          {dishInfo && (
             <div className="absolute inset-0 w-full h-full bg-gray-600 bg-opacity-50 z-50 flex justify-center items-center">
               <div className="flex flex-col w-1/3 max-w-sm h-1/2 border border-gray-600 rounded-lg">
-                <div className="w-full h-12 bg-lime-600 rounded-t-lg text-center flex items-center justify-center">
-                  <p className="text-white text-xl font-semibold italic">
-                    Start Order
+                <div className="w-full h-12 bg-lime-600 rounded-t-lg text-center flex items-center justify-between text-white text-xl font-semibold italic px-4">
+                  <p></p>
+                  <p className="">Order for '{dishInfo.name}'</p>
+                  <p
+                    className="hover:text-gray-200 cursor-pointer"
+                    onClick={() => {
+                      setDishInfo(null);
+                      setTotalPay(0);
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faDoorClosed} />
                   </p>
                 </div>
-                <div className="h-full bg-white"></div>
+                <div className="h-full bg-white p-4 flex flex-col items-center justify-start overflow-y-auto">
+                  <div className="flex w-full h-auto">
+                    <div
+                      className=" w-32 h-32 bg-center bg-cover rounded"
+                      style={{ backgroundImage: `url(${dishInfo.photo})` }}
+                    ></div>
+                    <div className="w-full ml-2">
+                      <div className="px-2 py-1 text-center bg-blue-400 text-blue-600 hover:bg-blue-600 hover:text-white transition duration-200 rounded-md cursor-pointer">
+                        Order
+                      </div>
+                      <div className="text-xl font-bold ">{dishInfo.name}</div>
+                      <div className="text-xs font-thin mb-2">
+                        {dishInfo.description}
+                      </div>
+                      <div className=" text-sm">Price: ${dishInfo.price}</div>
+                    </div>
+                  </div>
+                  {dishInfo.options && dishInfo.options.length > 0 && (
+                    <div className="w-full mt-2 border-t  border-gray-300 pt-2 px-2 flex flex-col">
+                      <div className="text-xl font-semibold mb-2">
+                        Select Options &amp; Choices
+                      </div>
+                      {dishInfo.options &&
+                        dishInfo.options.map((option, index) => (
+                          <div
+                            key={`option-${index}`}
+                            className="flex flex-col"
+                          >
+                            <div className="flex items-center">
+                              <input
+                                name={`option-${index}`}
+                                id={`option-${index}`}
+                                type="checkbox"
+                                className="mr-2"
+                              />
+                              <span>
+                                {option.name} -
+                                {option.extra === 0
+                                  ? "free"
+                                  : `$${option.extra}`}
+                              </span>
+                            </div>
+                            {option.choices && option.choices.length > 0 && (
+                              <div className="ml-4 border p-2 flex flex-col text-sm">
+                                <span className="mb-1 font-semibold">
+                                  Choose extra option
+                                </span>
+                                {option.choices &&
+                                  option.choices.map((choice, choiceIndex) => (
+                                    <div
+                                      key={`option-${choice}-${choiceIndex}`}
+                                    >
+                                      <div className="ml-2 flex items-center">
+                                        <input
+                                          name={`option-${index}-${choiceIndex}`}
+                                          id={`option-${index}-${choiceIndex}`}
+                                          type="checkbox"
+                                          className="mr-2"
+                                        />
+                                        <span>
+                                          {choice.name} -
+                                          {choice.extra === 0
+                                            ? "free"
+                                            : `$${option.extra}`}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </div>
                 <div className="w-full h-12 flex justify-center items-center text-white bg-lime-600 rounded-b-lg">
                   <FontAwesomeIcon icon={faCartPlus} className="mr-2" />
-                  Total
+                  Total: ${totalPay}
                 </div>
               </div>
             </div>

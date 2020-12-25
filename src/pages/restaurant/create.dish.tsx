@@ -40,7 +40,7 @@ interface IChoice {
 interface IOptions {
   name: string;
   extra: number;
-  choices?: IChoice[] | null;
+  choice?: IChoice[] | null;
 }
 interface ICreateDishForm {
   name: string;
@@ -136,23 +136,21 @@ export const CreateDish: React.FC = () => {
       const actualFile = file[0];
       const formBody = new FormData();
       formBody.append("file", actualFile);
+      console.log("option", options);
       options?.forEach((option) => {
-        const dishChoices: DishChoiceType[] | null = option?.choices
-          ? []
-          : null;
+        const dishChoices: DishChoiceType[] | null = option?.choice ? [] : null;
 
-        if (dishChoices) {
-          option?.choices?.forEach((choice) => {
-            dishChoices.push({
-              name: choice.name,
-              extra: +choice.extra,
-            });
+        option?.choice?.forEach((choice) => {
+          dishChoices?.push({
+            name: choice.name,
+            extra: +choice.extra,
           });
-        }
+        });
 
         dishOptions.push({
           name: option.name,
           extra: +option.extra,
+          choices: dishChoices,
         });
       });
       const { url: photo } = await (
@@ -161,7 +159,7 @@ export const CreateDish: React.FC = () => {
           body: formBody,
         })
       ).json();
-
+      console.log("dishoption", dishOptions);
       await createDish({
         variables: {
           input: {
