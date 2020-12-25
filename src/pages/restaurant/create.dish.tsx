@@ -226,6 +226,22 @@ export const CreateDish: React.FC = () => {
     }
   };
 
+  const onRemoveChoiceClicked = (index, choiceIndex) => {
+    const arrayIndex = optionChoices.findIndex(
+      (choice) => choice.optionIndex === index
+    );
+
+    if (arrayIndex !== -1) {
+      optionChoices[arrayIndex].choicesInfo = optionChoices[
+        arrayIndex
+      ]?.choicesInfo?.filter((choice) => {
+        return choice.index !== makeChoiceString(index, choiceIndex);
+      });
+      //optionChoices[arrayIndex].choicesInfo?.forEach(choiceIndex);
+      setOptionChoices([...optionChoices]);
+    }
+  };
+
   return (
     <div className="layout__container">
       <HelmetOnlyTitle title="Creating dish" />
@@ -372,6 +388,7 @@ export const CreateDish: React.FC = () => {
                                       type="text"
                                       name={`options[${index}].choice[${choiceIndex}].name`}
                                       placeholder="Name"
+                                      defaultValue=""
                                       ref={register({ required: true })}
                                     />
                                   </div>
@@ -381,10 +398,16 @@ export const CreateDish: React.FC = () => {
                                       type="number"
                                       name={`options[${index}].choice[${choiceIndex}].extra`}
                                       placeholder="Extra"
+                                      defaultValue=""
                                       ref={register({ required: true, min: 0 })}
                                     />
                                   </div>
-                                  <div className="w-1/6 cursor-pointer text-xs p-1 text-center bg-red-300 text-red-600 rounded-md hover:bg-red-600 hover:text-red-300 transition duration-200 ml-3">
+                                  <div
+                                    onClick={() =>
+                                      onRemoveChoiceClicked(index, choiceIndex)
+                                    }
+                                    className="cursor-pointer text-xs px-2 py-1 text-center bg-red-300 text-red-600 rounded-md hover:bg-red-600 hover:text-red-300 transition duration-200 ml-3"
+                                  >
                                     <FontAwesomeIcon icon={faTrashAlt} />
                                   </div>
                                 </div>
