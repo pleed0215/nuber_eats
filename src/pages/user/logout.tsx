@@ -14,10 +14,10 @@ export const LogOutPage = () => {
   );
   const handleLogout = () => {
     clearInterval(handleInterval);
-    client.cache.reset().then(() => history.push("/"));
     localStorage.removeItem(TOKEN_NAME);
     isLoggedInVar(false);
     authTokenVar(null);
+    client.cache.reset().then(() => history.push("/"));
   };
   setTimeout(handleLogout, 4000);
 
