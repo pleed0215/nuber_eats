@@ -63,7 +63,7 @@ export interface QueryMyRestaurant_restaurant_restaurant_orders_orderItems_dish 
   price: number;
 }
 
-export interface QueryMyRestaurant_restaurant_restaurant_orders_orderItems_options_choice {
+export interface QueryMyRestaurant_restaurant_restaurant_orders_orderItems_options_choices {
   __typename: "DishChoiceOption";
   name: string;
   extra: number | null;
@@ -73,7 +73,7 @@ export interface QueryMyRestaurant_restaurant_restaurant_orders_orderItems_optio
   __typename: "OrderItemOption";
   extra: number | null;
   name: string;
-  choice: QueryMyRestaurant_restaurant_restaurant_orders_orderItems_options_choice | null;
+  choices: QueryMyRestaurant_restaurant_restaurant_orders_orderItems_options_choices[] | null;
 }
 
 export interface QueryMyRestaurant_restaurant_restaurant_orders_orderItems {

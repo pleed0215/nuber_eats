@@ -71,7 +71,7 @@ export const ORDER_FRAGMENT = gql`
       options {
         extra
         name
-        choice {
+        choices {
           name
           extra
         }

@@ -33,7 +33,7 @@ export interface OrderPart_orderItems_dish {
   price: number;
 }
 
-export interface OrderPart_orderItems_options_choice {
+export interface OrderPart_orderItems_options_choices {
   __typename: "DishChoiceOption";
   name: string;
   extra: number | null;
@@ -43,7 +43,7 @@ export interface OrderPart_orderItems_options {
   __typename: "OrderItemOption";
   extra: number | null;
   name: string;
-  choice: OrderPart_orderItems_options_choice | null;
+  choices: OrderPart_orderItems_options_choices[] | null;
 }
 
 export interface OrderPart_orderItems {

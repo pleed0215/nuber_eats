@@ -1,4 +1,5 @@
 import { gql, useApolloClient, useMutation } from "@apollo/client";
+import { createSourceEventStream } from "graphql";
 import React, { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useHistory, useParams } from "react-router-dom";
@@ -67,7 +68,7 @@ interface IChoiceInput {
 export const CreateDish: React.FC = () => {
   const client = useApolloClient();
   const history = useHistory();
-  const optionChoices: IChoiceInput[] = [];
+  const [optionChoices, setOptionChoices] = useState<IChoiceInput[]>([]);
 
   const [createDish, { loading, data, error }] = useMutation<
     MutationCreateDish,
@@ -191,32 +192,35 @@ export const CreateDish: React.FC = () => {
   const makeChoiceString = (index, choiceIndex) =>
     `${index}-${choiceIndex} choice`;
   const onAddChoiceClicked = (index) => {
-    const option = optionChoices.find((choice) => choice.optionIndex === index);
-    if (option) {
-      option.choicesInfo?.push({
-        index: makeChoiceString(index, option.choicesInfo?.length),
+    const arrayIndex = optionChoices.findIndex(
+      (choice) => choice.optionIndex === index
+    );
+
+    if (arrayIndex !== -1) {
+      optionChoices[arrayIndex]?.choicesInfo?.push({
+        index: makeChoiceString(
+          index,
+          optionChoices[arrayIndex]?.choicesInfo?.length
+        ),
         isExist: true,
-        choice: {
-          name: "",
-          extra: 0,
-        },
+        choice: { name: "", extra: 0 },
       });
+      setOptionChoices(optionChoices);
     } else {
-      optionChoices.push({
-        optionIndex: index,
-        choicesInfo: [
-          {
-            index: makeChoiceString(index, 0),
-            isExist: true,
-            choice: {
-              name: "",
-              extra: 0,
+      setOptionChoices((current) => [
+        ...current,
+        {
+          optionIndex: index,
+          choicesInfo: [
+            {
+              index: makeChoiceString(index, 0),
+              isExist: true,
+              choice: { name: "", extra: 0 },
             },
-          },
-        ],
-      });
+          ],
+        },
+      ]);
     }
-    console.log(optionChoices);
   };
 
   return (
@@ -340,6 +344,39 @@ export const CreateDish: React.FC = () => {
                           ref={register({ required: true, min: 0 })}
                         />
                       </div>
+                    </div>
+                    <div className="flex justify-around">
+                      {optionChoices.map((o, choiceIndex) => {
+                        if (o.optionIndex !== index) {
+                          return <></>;
+                        } else {
+                          return o.choicesInfo?.map(
+                            (choice) =>
+                              choice.isExist && (
+                                <div className="flex justify-around">
+                                  <div className="auth__input_wrapper w-full mr-3">
+                                    <input
+                                      className="auth__form_input"
+                                      type="text"
+                                      name={`options[${index}].name`}
+                                      placeholder="Name"
+                                      ref={register({ required: true })}
+                                    />
+                                  </div>
+                                  <div className="auth__input_wrapper w-full">
+                                    <input
+                                      className="auth__form_input"
+                                      type="number"
+                                      name={`options[${index}].extra`}
+                                      placeholder="Extra"
+                                      ref={register({ required: true, min: 0 })}
+                                    />
+                                  </div>
+                                </div>
+                              )
+                          );
+                        }
+                      })}
                     </div>
                   </div>
                 ))}
