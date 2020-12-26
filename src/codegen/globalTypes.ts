@@ -30,6 +30,11 @@ export interface CreateDishInput {
   restaurantId: number;
 }
 
+export interface CreateOrderInput {
+  restaurantId: number;
+  items: CreateOrderItemInput[];
+}
+
 export interface CreateOrderItemInput {
   dishId: number;
   options?: OrderItemOptionInputType[] | null;

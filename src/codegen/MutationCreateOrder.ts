@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CreateOrderItemInput } from "./globalTypes";
+import { CreateOrderInput } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: MutationCreateOrder
@@ -20,5 +20,5 @@ export interface MutationCreateOrder {
 }
 
 export interface MutationCreateOrderVariables {
-  input?: CreateOrderItemInput | null;
+  input: CreateOrderInput;
 }

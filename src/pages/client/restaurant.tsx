@@ -42,7 +42,7 @@ export const GQL_RESTAURANT = gql`
 `;
 
 const GQL_ORDER = gql`
-  mutation MutationCreateOrder($input: CreateOrderItemInput) {
+  mutation MutationCreateOrder($input: CreateOrderInput!) {
     createOrder(input: $input) {
       ok
       error
@@ -113,17 +113,22 @@ export const Restaurant = () => {
       (option) => option.name === optionName
     );
     if (optionIndex > -1) {
-      const choice = options[optionIndex].choices?.find(
+      const choiceIndex = options[optionIndex].choices?.findIndex(
         (choice) => choice.name === choiceName
       );
-      if (choice) {
-        options[optionIndex].choices?.filter(
-          (choice) => choice.name === choiceName
-        );
+
+      if (choiceIndex !== undefined && choiceIndex > -1) {
+        options[optionIndex].choices?.splice(choiceIndex, 1);
+        console.log("if choice", options);
         setOptions([...options]);
         setTotalPay((current) => current - extra);
       } else {
-        options[optionIndex].choices?.push({ name: choiceName, extra });
+        if (options[optionIndex].choices) {
+          options[optionIndex].choices?.push({ name: choiceName, extra });
+        } else {
+          options[optionIndex].choices = [{ name: choiceName, extra }];
+        }
+        console.log("if choice is null", options);
         setOptions([...options]);
         setTotalPay((current) => current + extra);
       }
@@ -136,7 +141,6 @@ export const Restaurant = () => {
     setOptions([]);
   };
 
-  if (data) console.log(data);
   return (
     <div className="w-full flex justify-contern">
       {loading ? (
@@ -190,7 +194,7 @@ export const Restaurant = () => {
               <div className="flex flex-col w-1/3 max-w-sm h-1/2 border border-gray-600 rounded-lg">
                 <div className="w-full h-12 bg-lime-600 rounded-t-lg text-center flex items-center justify-between text-white text-xl font-semibold italic px-4">
                   <p></p>
-                  <p className="">Order for '{dishInfo.name}'</p>
+                  <p className="truncate">Order for '{dishInfo.name}'</p>
                   <p
                     className="hover:text-gray-200 cursor-pointer"
                     onClick={() => onOrderClosed()}
