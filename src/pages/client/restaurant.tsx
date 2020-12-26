@@ -6,7 +6,7 @@ import {
   faHome,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   MutationCreateOrder,
@@ -50,6 +50,17 @@ const GQL_ORDER = gql`
   }
 `;
 
+interface IChoice {
+  name: string;
+  extra: number;
+}
+
+interface IOption {
+  name: string;
+  extra: number;
+  choices?: IChoice[] | null;
+}
+
 export const Restaurant = () => {
   const { id } = useParams<IParam>();
   const [
@@ -57,6 +68,7 @@ export const Restaurant = () => {
     setDishInfo,
   ] = useState<QueryRestaurant_restaurant_restaurant_dishes | null>(null);
   const [totalPay, setTotalPay] = useState<number>(0);
+  const [options, setOptions] = useState<IOption[]>([]);
   const { data, loading, error } = useQuery<
     QueryRestaurant,
     QueryRestaurantVariables
@@ -79,6 +91,49 @@ export const Restaurant = () => {
       setDishInfo(dish);
       setTotalPay(dish.price);
     }
+  };
+
+  const onOptionClicked = (name, extra) => {
+    const option = options?.find((option) => option.name === name);
+    if (option) {
+      let choicesPay = 0;
+      option.choices?.forEach((choice) => (choicesPay += choice.extra));
+      setOptions(options.filter((option) => option.name !== name));
+      setTotalPay((current) => current - extra - choicesPay);
+    } else {
+      if (options) {
+        setOptions([...options, { name, extra }]);
+        setTotalPay((current) => current + extra);
+      }
+    }
+  };
+
+  const onChoiceClicked = (optionName, choiceName, extra) => {
+    const optionIndex = options?.findIndex(
+      (option) => option.name === optionName
+    );
+    if (optionIndex > -1) {
+      const choice = options[optionIndex].choices?.find(
+        (choice) => choice.name === choiceName
+      );
+      if (choice) {
+        options[optionIndex].choices?.filter(
+          (choice) => choice.name === choiceName
+        );
+        setOptions([...options]);
+        setTotalPay((current) => current - extra);
+      } else {
+        options[optionIndex].choices?.push({ name: choiceName, extra });
+        setOptions([...options]);
+        setTotalPay((current) => current + extra);
+      }
+    }
+  };
+
+  const onOrderClosed = () => {
+    setDishInfo(null);
+    setTotalPay(0);
+    setOptions([]);
   };
 
   if (data) console.log(data);
@@ -138,10 +193,7 @@ export const Restaurant = () => {
                   <p className="">Order for '{dishInfo.name}'</p>
                   <p
                     className="hover:text-gray-200 cursor-pointer"
-                    onClick={() => {
-                      setDishInfo(null);
-                      setTotalPay(0);
-                    }}
+                    onClick={() => onOrderClosed()}
                   >
                     <FontAwesomeIcon icon={faDoorClosed} />
                   </p>
@@ -179,6 +231,9 @@ export const Restaurant = () => {
                                 name={`option-${index}`}
                                 id={`option-${index}`}
                                 type="checkbox"
+                                onClick={() =>
+                                  onOptionClicked(option.name, option.extra)
+                                }
                                 className="mr-2"
                               />
                               <span>
@@ -203,13 +258,20 @@ export const Restaurant = () => {
                                           name={`option-${index}-${choiceIndex}`}
                                           id={`option-${index}-${choiceIndex}`}
                                           type="checkbox"
+                                          onClick={() =>
+                                            onChoiceClicked(
+                                              option.name,
+                                              choice.name,
+                                              choice.extra
+                                            )
+                                          }
                                           className="mr-2"
                                         />
                                         <span>
                                           {choice.name} -
                                           {choice.extra === 0
                                             ? "free"
-                                            : `$${option.extra}`}
+                                            : `$${choice.extra}`}
                                         </span>
                                       </div>
                                     </div>
