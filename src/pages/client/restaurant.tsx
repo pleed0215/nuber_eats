@@ -141,7 +141,7 @@ export const Restaurant = () => {
 
       if (choiceIndex !== undefined && choiceIndex > -1) {
         options[optionIndex].choices?.splice(choiceIndex, 1);
-        console.log("if choice", options);
+
         setOptions([...options]);
         setTotalPay((current) => current - extra);
       } else {
@@ -150,7 +150,6 @@ export const Restaurant = () => {
         } else {
           options[optionIndex].choices = [{ name: choiceName, extra }];
         }
-        console.log("if choice is null", options);
         setOptions([...options]);
         setTotalPay((current) => current + extra);
       }
@@ -272,19 +271,16 @@ export const Restaurant = () => {
                     return (
                       <div key={`confirm-order-${index}`} className="w-full">
                         <div className="font-mono text-sm pl-2">
-                          {`#${index + 1} - ${dish?.name} / $${dish?.price}`}
-                          {order.options && order.options?.length > 0 && (
-                            <p>[Option]</p>
-                          )}
+                          {`# ${index + 1} - ${dish?.name} / $${dish?.price}`}
                           {order.options !== null &&
                             order.options?.map((option, optionIndex) => (
                               <div
                                 className="font-mono text-sm font-thin pl-4"
                                 key={`confir-option-${optionIndex}`}
                               >
-                                {`#${optionIndex + 1} ${option?.name} - $${
-                                  option?.extra
-                                }`}
+                                {`@ Option ${optionIndex + 1}. ${
+                                  option?.name
+                                } - $${option?.extra}`}
                                 {option.choices &&
                                   option.choices.length > 0 && (
                                     <div>&lt;Additional&gt;</div>
@@ -293,7 +289,7 @@ export const Restaurant = () => {
                                   <div
                                     className="font-mono text-sm font-thin pl-4"
                                     key={`confir-choice-${index}-${choiceIndex}`}
-                                  >{`#${choiceIndex + 1} ${choice?.name} - $${
+                                  >{`* ${choiceIndex + 1}. ${choice?.name} - $${
                                     choice?.extra
                                   }`}</div>
                                 ))}
