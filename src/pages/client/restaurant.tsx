@@ -1,5 +1,6 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import {
+  faCalculator,
   faCartArrowDown,
   faCartPlus,
   faDoorClosed,
@@ -8,7 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useHistory, useParams } from "react-router-dom";
 import {
   MutationCreateOrder,
   MutationCreateOrderVariables,
@@ -21,6 +22,8 @@ import {
 import { DishItem } from "../../components/dish.item";
 import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 import { CreateOrderItemInput } from "../../codegen/globalTypes";
+import { CartIcon } from "../../components/cart.icon";
+import { toast } from "react-toastify";
 
 interface IParam {
   id: string;
@@ -65,6 +68,7 @@ interface IOption {
 
 export const Restaurant = () => {
   const { id } = useParams<IParam>();
+  const history = useHistory();
   const [
     dishInfo,
     setDishInfo,
@@ -72,6 +76,9 @@ export const Restaurant = () => {
   const [totalPay, setTotalPay] = useState<number>(0);
   const [options, setOptions] = useState<IOption[]>([]);
   const [totalOrder, setTotalOrder] = useState<CreateOrderItemInput[]>([]);
+  const [totalOrderPay, setTotalOrderPay] = useState<number>(0);
+  const [seeCart, setSeeCart] = useState<boolean>(false);
+  const [nowOrdering, setNowOrdering] = useState<boolean>(false);
   const { data, loading, error } = useQuery<
     QueryRestaurant,
     QueryRestaurantVariables
@@ -84,7 +91,19 @@ export const Restaurant = () => {
   const [createOrder, { loading: loadingCreateOrder }] = useMutation<
     MutationCreateOrder,
     MutationCreateOrderVariables
-  >(GQL_ORDER);
+  >(GQL_ORDER, {
+    onCompleted: (data: MutationCreateOrder) => {
+      setNowOrdering(false);
+      setSeeCart(false);
+      toast.success(
+        "You order was successfully made. Please wait for your delivery."
+      );
+      history.goBack();
+    },
+    onError: (error) => {
+      toast.error("Order failed...");
+    },
+  });
 
   const onDishClicked = (id) => {
     const dish = data?.restaurant.restaurant?.dishes?.find(
@@ -147,9 +166,23 @@ export const Restaurant = () => {
   const onAddCartClicked = (dishId) => {
     const order: CreateOrderItemInput = {
       dishId,
-      options: { ...options },
+      options: [...options],
     };
     setTotalOrder([...totalOrder, order]);
+    setTotalOrderPay((current) => current + totalPay);
+    onOrderClosed();
+  };
+
+  const startOrder = async () => {
+    setNowOrdering(true);
+    await createOrder({
+      variables: {
+        input: {
+          restaurantId: +id,
+          items: totalOrder,
+        },
+      },
+    });
   };
 
   return (
@@ -187,7 +220,19 @@ export const Restaurant = () => {
               </h4>
             </div>
           </div>
-          <div className="layout__container grid lg:grid-cols-3 md:grid-cols-2  sm:grid-cols-1 gap-4 mt-10">
+          <div className="layout__container flex justify-start items-center pt-5">
+            <div
+              className="flex items-center cursor-pointer"
+              onClick={() => setSeeCart(totalOrder.length > 0 && true)}
+            >
+              <CartIcon n={totalOrder.length} />
+              <span className="ml-2 text-lg">Total: ${totalOrderPay}</span>
+            </div>
+          </div>
+          <div className="text-2xl italic border-b pb-2 w-full layout__container mt-4">
+            Choose Dishes you want to order
+          </div>
+          <div className="layout__container grid lg:grid-cols-3 md:grid-cols-2  sm:grid-cols-1 gap-4 mt-4">
             {data?.restaurant.restaurant?.dishes?.map((dish) => (
               <div key={dish.id} onClick={() => onDishClicked(dish.id)}>
                 <DishItem
@@ -200,6 +245,81 @@ export const Restaurant = () => {
               </div>
             ))}
           </div>
+          {seeCart && (
+            <div className="absolute inset-0 w-full h-full bg-gray-600 bg-opacity-50 z-50 flex justify-center items-center">
+              <div className="flex flex-col w-1/3 max-w-sm h-1/2 border border-gray-600 rounded-lg">
+                <div className="w-full h-12 bg-lime-600 rounded-t-lg text-center flex items-center justify-between text-white text-xl font-semibold italic px-4">
+                  <p></p>
+                  <p>Confirm orders</p>
+                  <p>
+                    <FontAwesomeIcon
+                      icon={faDoorOpen}
+                      className="hover:text-gray-300 cursor-pointer"
+                      onClick={() => setSeeCart(false)}
+                    />
+                  </p>
+                </div>
+                <div className="h-full bg-white p-4 flex flex-col items-center justify-start overflow-y-auto">
+                  <div className="text-md font-thin font-mono w-full">
+                    Total orders
+                    <hr></hr>
+                  </div>
+                  {totalOrder.map((order, index) => {
+                    const dish = data.restaurant.restaurant?.dishes?.find(
+                      (d) => d.id === order.dishId
+                    );
+
+                    return (
+                      <div key={`confirm-order-${index}`} className="w-full">
+                        <div className="font-mono text-sm pl-2">
+                          {`#${index + 1} - ${dish?.name} / $${dish?.price}`}
+                          {order.options && order.options?.length > 0 && (
+                            <p>[Option]</p>
+                          )}
+                          {order.options !== null &&
+                            order.options?.map((option, optionIndex) => (
+                              <div
+                                className="font-mono text-sm font-thin pl-4"
+                                key={`confir-option-${optionIndex}`}
+                              >
+                                {`#${optionIndex + 1} ${option?.name} - $${
+                                  option?.extra
+                                }`}
+                                {option.choices &&
+                                  option.choices.length > 0 && (
+                                    <div>&lt;Additional&gt;</div>
+                                  )}
+                                {option?.choices?.map((choice, choiceIndex) => (
+                                  <div
+                                    className="font-mono text-sm font-thin pl-4"
+                                    key={`confir-choice-${index}-${choiceIndex}`}
+                                  >{`#${choiceIndex + 1} ${choice?.name} - $${
+                                    choice?.extra
+                                  }`}</div>
+                                ))}
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div
+                  onClick={() => startOrder()}
+                  className="w-full h-12 grid grid-cols-3 items-center text-white bg-lime-600 rounded-b-lg cursor-pointer hover:bg-lime-400 hover:text-lime-600 transition duration-200"
+                >
+                  <p className="text-center">
+                    <FontAwesomeIcon icon={faCalculator} className="mr-2" />
+                    Total: ${totalOrderPay}
+                  </p>
+                  <p className="text-center">
+                    {nowOrdering ? "Ordering ...." : "Order Now"}
+                  </p>
+                  <p></p>
+                </div>
+              </div>
+            </div>
+          )}
           {dishInfo && (
             <div className="absolute inset-0 w-full h-full bg-gray-600 bg-opacity-50 z-50 flex justify-center items-center">
               <div className="flex flex-col w-1/3 max-w-sm h-1/2 border border-gray-600 rounded-lg">
