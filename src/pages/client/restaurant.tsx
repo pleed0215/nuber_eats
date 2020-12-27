@@ -144,6 +144,14 @@ export const Restaurant = () => {
     setOptions([]);
   };
 
+  const onAddCartClicked = (dishId) => {
+    const order: CreateOrderItemInput = {
+      dishId,
+      options: { ...options },
+    };
+    setTotalOrder([...totalOrder, order]);
+  };
+
   return (
     <div className="w-full flex justify-contern">
       {loading ? (
@@ -212,7 +220,10 @@ export const Restaurant = () => {
                       style={{ backgroundImage: `url(${dishInfo.photo})` }}
                     ></div>
                     <div className="w-full ml-2">
-                      <div className="px-2 py-1 text-center bg-blue-400 text-blue-600 hover:bg-blue-600 hover:text-white transition duration-200 rounded-md cursor-pointer">
+                      <div
+                        onClick={() => onAddCartClicked(dishInfo.id)}
+                        className="px-2 py-1 text-center bg-blue-400 text-blue-600 hover:bg-blue-600 hover:text-white transition duration-200 rounded-md cursor-pointer"
+                      >
                         <FontAwesomeIcon
                           icon={faCartArrowDown}
                           className="mr-2"
