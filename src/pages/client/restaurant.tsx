@@ -3,6 +3,7 @@ import {
   faCartArrowDown,
   faCartPlus,
   faDoorClosed,
+  faDoorOpen,
   faHome,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,6 +20,7 @@ import {
 } from "../../codegen/QueryRestaurant";
 import { DishItem } from "../../components/dish.item";
 import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
+import { CreateOrderItemInput } from "../../codegen/globalTypes";
 
 interface IParam {
   id: string;
@@ -69,6 +71,7 @@ export const Restaurant = () => {
   ] = useState<QueryRestaurant_restaurant_restaurant_dishes | null>(null);
   const [totalPay, setTotalPay] = useState<number>(0);
   const [options, setOptions] = useState<IOption[]>([]);
+  const [totalOrder, setTotalOrder] = useState<CreateOrderItemInput[]>([]);
   const { data, loading, error } = useQuery<
     QueryRestaurant,
     QueryRestaurantVariables
@@ -199,7 +202,7 @@ export const Restaurant = () => {
                     className="hover:text-gray-200 cursor-pointer"
                     onClick={() => onOrderClosed()}
                   >
-                    <FontAwesomeIcon icon={faDoorClosed} />
+                    <FontAwesomeIcon icon={faDoorOpen} />
                   </p>
                 </div>
                 <div className="h-full bg-white p-4 flex flex-col items-center justify-start overflow-y-auto">
@@ -210,7 +213,11 @@ export const Restaurant = () => {
                     ></div>
                     <div className="w-full ml-2">
                       <div className="px-2 py-1 text-center bg-blue-400 text-blue-600 hover:bg-blue-600 hover:text-white transition duration-200 rounded-md cursor-pointer">
-                        Order
+                        <FontAwesomeIcon
+                          icon={faCartArrowDown}
+                          className="mr-2"
+                        />
+                        Add to Cart
                       </div>
                       <div className="text-xl font-bold ">{dishInfo.name}</div>
                       <div className="text-xs font-thin mb-2">
