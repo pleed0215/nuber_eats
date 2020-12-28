@@ -51,6 +51,7 @@ const GQL_ORDER = gql`
     createOrder(input: $input) {
       ok
       error
+      orderId
     }
   }
 `;
@@ -92,13 +93,15 @@ export const Restaurant = () => {
     MutationCreateOrder,
     MutationCreateOrderVariables
   >(GQL_ORDER, {
-    onCompleted: (data: MutationCreateOrder) => {
-      setNowOrdering(false);
-      setSeeCart(false);
-      toast.success(
-        "You order was successfully made. Please wait for your delivery."
-      );
-      history.goBack();
+    onCompleted: ({ createOrder: { ok, orderId } }: MutationCreateOrder) => {
+      if (ok) {
+        setNowOrdering(false);
+        setSeeCart(false);
+        toast.success(
+          "You order was successfully made. Please wait for your delivery."
+        );
+        history.push(`/order/${orderId}`);
+      }
     },
     onError: (error) => {
       toast.error("Order failed...");
@@ -246,7 +249,7 @@ export const Restaurant = () => {
           </div>
           {seeCart && (
             <div className="absolute inset-0 w-full h-full bg-gray-600 bg-opacity-50 z-50 flex justify-center items-center">
-              <div className="flex flex-col w-1/3 max-w-sm h-1/2 border border-gray-600 rounded-lg">
+              <div className="flex flex-col w-1/3 min-w-max max-w-sm h-1/2 border border-gray-600 rounded-lg">
                 <div className="w-full h-12 bg-lime-600 rounded-t-lg text-center flex items-center justify-between text-white text-xl font-semibold italic px-4">
                   <p></p>
                   <p>Confirm orders</p>
@@ -318,7 +321,7 @@ export const Restaurant = () => {
           )}
           {dishInfo && (
             <div className="absolute inset-0 w-full h-full bg-gray-600 bg-opacity-50 z-50 flex justify-center items-center">
-              <div className="flex flex-col w-1/3 max-w-sm h-1/2 border border-gray-600 rounded-lg">
+              <div className="flex flex-col w-1/3 min-w-max max-w-sm h-1/2 border border-gray-600 rounded-lg">
                 <div className="w-full h-12 bg-lime-600 rounded-t-lg text-center flex items-center justify-between text-white text-xl font-semibold italic px-4">
                   <p></p>
                   <p className="truncate">Order for '{dishInfo.name}'</p>

@@ -9,7 +9,7 @@ interface ICartIcon {
 export const CartIcon: React.FC<ICartIcon> = ({ n = 0 }) => {
   return (
     <div
-      className={`w-10 h-10 relative flex border rounded-full p-2 bg-gray-200 items-center justify-center`}
+      className={`w-10 h-10 shadow-lg relative flex border rounded-full p-2 bg-gray-200 hover:bg-gray-300 transition duration-200 items-center justify-center`}
     >
       <div>
         <FontAwesomeIcon icon={faCartPlus} />
