@@ -187,6 +187,21 @@ export const Restaurant = () => {
     });
   };
 
+  const hasOption = (optionName) => {
+    return Boolean(options.find((option) => option.name === optionName));
+  };
+
+  const hasChoice = (optionName, choiceName) => {
+    const option = options.find((o) => o.name === optionName);
+    if (option) {
+      return Boolean(
+        option.choices?.find((choice) => choice.name === choiceName)
+      );
+    } else {
+      return false;
+    }
+  };
+
   return (
     <div className="w-full flex justify-contern">
       {loading ? (
@@ -305,7 +320,7 @@ export const Restaurant = () => {
                 </div>
                 <div
                   onClick={() => startOrder()}
-                  className="w-full h-12 grid grid-cols-3 items-center text-white bg-lime-600 rounded-b-lg cursor-pointer hover:bg-lime-400 hover:text-lime-600 transition duration-200"
+                  className="w-full h-12 grid grid-cols-3 items-center text-white bg-lime-600 rounded-b-lg cursor-pointer hover:bg-lime-700  transition duration-200"
                 >
                   <p className="text-center">
                     <FontAwesomeIcon icon={faCalculator} className="mr-2" />
@@ -367,16 +382,16 @@ export const Restaurant = () => {
                             key={`option-${index}`}
                             className="flex flex-col"
                           >
-                            <div className="flex items-center">
-                              <input
-                                name={`option-${index}`}
-                                id={`option-${index}`}
-                                type="checkbox"
-                                onClick={() =>
-                                  onOptionClicked(option.name, option.extra)
-                                }
-                                className="mr-2"
-                              />
+                            <div
+                              className={`flex items-center border px-2 py-1 cursor-pointer rounded-lg mb-2 ${
+                                hasOption(option.name)
+                                  ? " border-gray-600 shadow bg-lime-200"
+                                  : "border-gray-200"
+                              }`}
+                              onClick={() =>
+                                onOptionClicked(option.name, option.extra)
+                              }
+                            >
                               <span>
                                 {option.name} -
                                 {option.extra === 0
@@ -385,7 +400,7 @@ export const Restaurant = () => {
                               </span>
                             </div>
                             {option.choices && option.choices.length > 0 && (
-                              <div className="ml-4 border p-2 flex flex-col text-sm">
+                              <div className="ml-4 border p-2 flex flex-col text-sm mb-2">
                                 <span className="mb-1 font-semibold">
                                   Choose extra option
                                 </span>
@@ -393,21 +408,20 @@ export const Restaurant = () => {
                                   option.choices.map((choice, choiceIndex) => (
                                     <div
                                       key={`option-${choice}-${choiceIndex}`}
+                                      className={`px-2 py-1 border rounded-lg mb-1 cursor-pointer ${
+                                        hasChoice(option.name, choice.name)
+                                          ? "border-gray-600 shadow bg-lime-200"
+                                          : "border-gray-200"
+                                      }`}
+                                      onClick={() =>
+                                        onChoiceClicked(
+                                          option.name,
+                                          choice.name,
+                                          choice.extra
+                                        )
+                                      }
                                     >
                                       <div className="ml-2 flex items-center">
-                                        <input
-                                          name={`option-${index}-${choiceIndex}`}
-                                          id={`option-${index}-${choiceIndex}`}
-                                          type="checkbox"
-                                          onClick={() =>
-                                            onChoiceClicked(
-                                              option.name,
-                                              choice.name,
-                                              choice.extra
-                                            )
-                                          }
-                                          className="mr-2"
-                                        />
                                         <span>
                                           {choice.name} -
                                           {choice.extra === 0
