@@ -3,18 +3,36 @@ import {
   createHttpLink,
   InMemoryCache,
   makeVar,
+  split,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { TOKEN_NAME } from "./gloabl.constant";
+import { WebSocketLink } from "@apollo/client/link/ws";
+import { SubscriptionClient } from "subscriptions-transport-ws";
+import { getMainDefinition } from "@apollo/client/utilities";
 
 export const getLSToken = () => localStorage.getItem(TOKEN_NAME);
 
 export const isLoggedInVar = makeVar(Boolean(getLSToken()));
 export const authTokenVar = makeVar(getLSToken());
 
+const BASE_ENDPOINT = "lednas.yoyang.io:32789/graphql";
+const HTTP_ENDPOINT = `http://${BASE_ENDPOINT}`;
+const WS_ENDPOINT = `ws://${BASE_ENDPOINT}`;
+
 const httpLink = createHttpLink({
-  uri: "http://lednas.yoyang.io:32789/graphql",
+  uri: HTTP_ENDPOINT,
   //uri: "http://localhost:4000/graphql",
+});
+
+const wsLink = new WebSocketLink({
+  uri: WS_ENDPOINT,
+  options: {
+    reconnect: true,
+    connectionParams: {
+      "x-jwt": authTokenVar() || "",
+    },
+  },
 });
 
 const authLink = setContext((request, prevContext) => {
@@ -25,9 +43,20 @@ const authLink = setContext((request, prevContext) => {
     },
   };
 });
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === "OperationDefinition" &&
+      definition.operation === "subscription"
+    );
+  },
+  wsLink,
+  authLink.concat(httpLink)
+);
 
 export const apolloClient = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: splitLink,
   cache: new InMemoryCache({
     typePolicies: {
       Query: {

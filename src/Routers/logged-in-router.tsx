@@ -24,6 +24,7 @@ import { VerificationPage } from "../pages/user/verification.page";
 import { CreateDish } from "../pages/restaurant/create.dish";
 import { UpdateRestaurant } from "../pages/restaurant/update.restaurant";
 import { UpdateDish } from "../pages/restaurant/update.dish";
+import { Order } from "../pages/order";
 
 interface IRouteItem {
   path: string;
@@ -96,6 +97,10 @@ const commonRoutes: IRouteItem[] = [
   {
     path: "/logout",
     component: LogOutPage,
+  },
+  {
+    path: "/orders/:id",
+    component: Order,
   },
 ];
 

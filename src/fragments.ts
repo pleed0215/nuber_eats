@@ -79,3 +79,31 @@ export const ORDER_FRAGMENT = gql`
     }
   }
 `;
+
+export const ORDERS_FRAGMENT = gql`
+  fragment OrderPart on Order {
+    id
+    createAt
+    totalCost
+  }
+`;
+
+export const FULL_ORDER_FRAGMENT = gql`
+  fragment FullOrderPart on Order {
+    id
+    orderStatus
+    totalCost
+    driver {
+      id
+      email
+    }
+    customer {
+      id
+      email
+    }
+    restaurant {
+      name
+      address
+    }
+  }
+`;

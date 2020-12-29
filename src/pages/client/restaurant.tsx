@@ -100,7 +100,7 @@ export const Restaurant = () => {
         toast.success(
           "You order was successfully made. Please wait for your delivery."
         );
-        history.push(`/order/${orderId}`);
+        history.push(`/orders/${orderId}`);
       }
     },
     onError: (error) => {
@@ -176,15 +176,23 @@ export const Restaurant = () => {
   };
 
   const startOrder = async () => {
+    if (loadingCreateOrder) {
+      return;
+    }
     setNowOrdering(true);
-    await createOrder({
-      variables: {
-        input: {
-          restaurantId: +id,
-          items: totalOrder,
+    const ok = window.confirm("Are you sure order?");
+    if (ok) {
+      await createOrder({
+        variables: {
+          input: {
+            restaurantId: +id,
+            items: totalOrder,
+          },
         },
-      },
-    });
+      });
+    } else {
+      setNowOrdering(false);
+    }
   };
 
   const hasOption = (optionName) => {

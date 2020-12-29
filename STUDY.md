@@ -658,3 +658,51 @@ req.reply((res) => {
 
 2020-12-24T07:23:17.244Z 이런 형식으로 되어 있는 것을.. 흔히 알고 있는 date형식으로 바꾸고 싶으면..
 new Date("2020-12-24T07:23:17.244Z").toLocaleDateString()으로 해주면 된다.
+
+....
+front end 부분은 처음에 세팅과 낯선 환경으로 적을게 좀 많았지만 후반에는 정말 적을게 없다.
+
+# 23 Order
+
+## 0. Order Component
+
+- 처음에 order 관련된 query를 만들고 나면, 이제 곧 subscription을 해야 하는데, backend 에서 설정해줬던 것처럼 front-end에서도 subscription에 대한 설정, 즉 웹 소켓에 관련된 설정을 해줘야 한다.
+
+### apollo websocket 설정
+
+- transport 설정이 가장 어려울 것이라 함.
+- 먼저 subscriptions-transport-ws 라는 것을 설치해야 한다.
+
+  > npm i subscriptions-transport-ws
+
+- apollo client 설정, 여기서는 apollo.ts로 가서
+
+  > import { WebSocketLink } from "@apollo/client/link/ws";
+
+  를 추가해준다.
+
+- 공식 문서와는 조금 차이가 있는 것 같다. 강의에서도 공식 문서를 참고하지만...
+  [링크](https://www.apollographql.com/docs/react/data/subscriptions/#setting-up-the-transport)
+
+추가되는 코드는 총..
+
+```ts
+const wsLink = new WebSocketLink({
+  uri: WS_ENDPOINT,
+  options: {
+    reconnect: true,
+  },
+});
+
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === "OperationDefinition" &&
+      definition.operation === "subscription"
+    );
+  },
+  wsLink,
+  httpLink
+);
+```
