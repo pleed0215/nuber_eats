@@ -706,3 +706,42 @@ const splitLink = split(
   httpLink
 );
 ```
+
+### subscribeToMore
+
+- subscribtion을 강의대로 했는데, 문제점은 우리가 서브스크립션한 내용이 query에 반영이 안되니까 데이터에 갭이 있더라..
+- 이 부분은 이미 아폴로 클라이언트 만드는 사람들도 고민한 내용이다..
+- 그래서 등장한 개념.
+- useQuery의 리턴 값중 하나.
+- useEffect에서 실행될 것이다.
+
+#### type change in typescript
+
+```ts
+{ subscriptionData: { data },}: { subscriptionData: { data: OnOrderUpdate } }
+```
+
+니코가 집고 넘어간 부분이 있는데, subscribeToMore의 updateQuery는 function callback인데, 들어오는 argument들이 QueryOrderDetail이다. 이게 무슨 말인고 하면..
+QueryOrderDetail의 return value는 backend에서 ok, error, order를 리턴을 해준다는 것.. 하지만 우리의 subscription에서는 order만을 리턴을 해주기 때문에 typescript에서는 불평을 한다.
+위와 같이 코드를 작성하면, QueryOrderDetail을 subscription에서 리턴해주는 OnOrderUpdate type을 바꿔줄 수 있다는 의미. 이것은 ES6가 아니라 typescript 표현방식이라고 한다.
+
+```ts
+updateQuery: (
+        prev,
+        {
+          subscriptionData: { data },
+        }: { subscriptionData: { data: OnOrderUpdate } }
+      ) => {
+        if (!data) return prev;
+        return {
+          orderDetail: {
+            ...prev.orderDetail,
+            order: {
+              ...data.orderUpdate,
+            },
+          },
+        };
+      },
+```
+
+이런 코드가 만들어질 것.

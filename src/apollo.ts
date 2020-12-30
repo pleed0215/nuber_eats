@@ -16,7 +16,8 @@ export const getLSToken = () => localStorage.getItem(TOKEN_NAME);
 export const isLoggedInVar = makeVar(Boolean(getLSToken()));
 export const authTokenVar = makeVar(getLSToken());
 
-const BASE_ENDPOINT = "lednas.yoyang.io:32789/graphql";
+//const BASE_ENDPOINT = "lednas.yoyang.io:32789/graphql";
+const BASE_ENDPOINT = "my.yoyang.io:32788/graphql";
 const HTTP_ENDPOINT = `http://${BASE_ENDPOINT}`;
 const WS_ENDPOINT = `ws://${BASE_ENDPOINT}`;
 

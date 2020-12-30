@@ -4,7 +4,7 @@ module.exports = {
     tagName: "gql",
     service: {
       name: "nuber-eats-backend",
-      url: "http://lednas.yoyang.io:32789/graphql",
+      url: "http://my.yoyang.io:32788/graphql",
       // optional headers
       headers: {
         authorization: "Bearer lkjfalkfjadkfjeopknavadf",

@@ -1,5 +1,5 @@
 import { gql, useQuery, useSubscription } from "@apollo/client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
   OnOrderUpdate,
@@ -11,6 +11,7 @@ import {
 } from "../codegen/QueryOrderDetail";
 import { HelmetOnlyTitle } from "../components/helmet.onlytitle";
 import { FULL_ORDER_FRAGMENT } from "../fragments";
+import { useMe } from "../hooks/useMe";
 
 interface IParams {
   id: string;
@@ -40,7 +41,7 @@ const GQL_ON_ORDER = gql`
 
 export const Order = () => {
   const { id } = useParams<IParams>();
-  const { data, loading, error } = useQuery<
+  const { data, loading, error, subscribeToMore } = useQuery<
     QueryOrderDetail,
     QueryOrderDetailVariables
   >(GQL_GET_ORDER, {
@@ -48,17 +49,33 @@ export const Order = () => {
       id: +id,
     },
   });
+  const { data: userData } = useMe();
 
-  const { data: orderUpdateData, loading: loadingOnOrder } = useSubscription<
-    OnOrderUpdate,
-    OnOrderUpdateVariables
-  >(GQL_ON_ORDER, {
-    variables: {
-      orderId: +id,
-    },
-  });
-
-  console.log(orderUpdateData);
+  useEffect(() => {
+    subscribeToMore({
+      document: GQL_ON_ORDER,
+      variables: {
+        orderId: +id,
+      },
+      updateQuery: (
+        prev,
+        {
+          subscriptionData: { data },
+        }: { subscriptionData: { data: OnOrderUpdate } }
+      ) => {
+        if (!data) return prev;
+        return {
+          orderDetail: {
+            ...prev.orderDetail,
+            order: {
+              ...data.orderUpdate,
+            },
+          },
+        };
+      },
+    });
+    return () => {};
+  }, [data]);
 
   return (
     <div className="layout__container mt-32 flex justify-center items-center">
@@ -92,12 +109,21 @@ export const Order = () => {
                 ? "Not yet"
                 : data?.orderDetail?.order?.driver?.email}
             </div>
-            <div className=" w-full py-8 text-center text-lime-500 font-semibold text-lg">
-              Status:{" "}
-              {orderUpdateData?.orderUpdate
-                ? orderUpdateData.orderUpdate.orderStatus
-                : data?.orderDetail?.order?.orderStatus}
-            </div>
+            {userData?.me?.role === "Client" && (
+              <div className=" w-full py-8 text-center text-lime-500 font-semibold text-lg">
+                Status:{data?.orderDetail?.order?.orderStatus}
+              </div>
+            )}
+            {userData?.me?.role === "Owner" && (
+              <>
+                {data?.orderDetail?.order?.orderStatus === "Pending" && (
+                  <button>Accept Order</button>
+                )}
+                {data?.orderDetail?.order?.orderStatus === "Cooking" && (
+                  <button>Order Cooked</button>
+                )}
+              </>
+            )}
           </div>
         </div>
       )}

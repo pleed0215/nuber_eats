@@ -1,4 +1,4 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useSubscription } from "@apollo/client";
 import {
   faEdit,
   faHome,
@@ -8,7 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useHistory, useParams } from "react-router-dom";
 import {
   QueryMyRestaurant,
   QueryMyRestaurantVariables,
@@ -17,6 +17,7 @@ import { DishItem } from "../../components/dish.item";
 
 import {
   DISH_FRAGMENT,
+  FULL_ORDER_FRAGMENT,
   ORDER_FRAGMENT,
   RESTAURANT_FRAGMENT,
 } from "../../fragments";
@@ -28,6 +29,7 @@ import {
   VictoryTheme,
   VictoryTooltip,
 } from "victory";
+import { OnPendingOrders } from "../../codegen/OnPendingOrders";
 
 interface IParam {
   id: string;
@@ -54,6 +56,15 @@ export const GQL_MYRESTAURANT = gql`
   ${ORDER_FRAGMENT}
 `;
 
+const GQL_PENDING_ORDERS = gql`
+  subscription OnPendingOrders {
+    pendingOrders {
+       ...FullOrderPart
+    }
+    ${FULL_ORDER_FRAGMENT}
+  }
+`;
+
 interface IChartData {
   x: string;
   y: number;
@@ -70,6 +81,17 @@ export const MyRestaurant = () => {
       id: +id,
     },
   });
+
+  const { data: subscriptionData } = useSubscription<OnPendingOrders>(
+    GQL_PENDING_ORDERS
+  );
+  const history = useHistory();
+
+  useEffect(() => {
+    if (subscriptionData?.pendingOrders.id) {
+      history.push(`/orders/${subscriptionData.pendingOrders.id}`);
+    }
+  }, [subscriptionData]);
 
   if (data && !loading) {
     data.restaurant?.restaurant?.orders?.forEach((order) => {

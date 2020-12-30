@@ -24,6 +24,7 @@ import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 import { CreateOrderItemInput } from "../../codegen/globalTypes";
 import { CartIcon } from "../../components/cart.icon";
 import { toast } from "react-toastify";
+import { create } from "cypress/types/lodash";
 
 interface IParam {
   id: string;
@@ -95,6 +96,7 @@ export const Restaurant = () => {
   >(GQL_ORDER, {
     onCompleted: ({ createOrder: { ok, orderId } }: MutationCreateOrder) => {
       if (ok) {
+        console.log(createOrder);
         setNowOrdering(false);
         setSeeCart(false);
         toast.success(
@@ -163,6 +165,7 @@ export const Restaurant = () => {
     setDishInfo(null);
     setTotalPay(0);
     setOptions([]);
+    setNowOrdering(false);
   };
 
   const onAddCartClicked = (dishId) => {
@@ -176,7 +179,7 @@ export const Restaurant = () => {
   };
 
   const startOrder = async () => {
-    if (loadingCreateOrder) {
+    if (nowOrdering || loadingCreateOrder) {
       return;
     }
     setNowOrdering(true);
