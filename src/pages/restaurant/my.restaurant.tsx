@@ -59,10 +59,10 @@ export const GQL_MYRESTAURANT = gql`
 const GQL_PENDING_ORDERS = gql`
   subscription OnPendingOrders {
     pendingOrders {
-       ...FullOrderPart
+      ...FullOrderPart
     }
-    ${FULL_ORDER_FRAGMENT}
   }
+  ${FULL_ORDER_FRAGMENT}
 `;
 
 interface IChartData {
@@ -88,6 +88,7 @@ export const MyRestaurant = () => {
   const history = useHistory();
 
   useEffect(() => {
+    console.log(subscriptionData);
     if (subscriptionData?.pendingOrders.id) {
       history.push(`/orders/${subscriptionData.pendingOrders.id}`);
     }

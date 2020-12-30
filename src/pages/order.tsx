@@ -1,10 +1,15 @@
-import { gql, useQuery, useSubscription } from "@apollo/client";
+import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { OrderStatus, UserRole } from "../codegen/globalTypes";
 import {
   OnOrderUpdate,
   OnOrderUpdateVariables,
 } from "../codegen/OnOrderUpdate";
+import {
+  OwnerUpdateOrder,
+  OwnerUpdateOrderVariables,
+} from "../codegen/OwnerUpdateOrder";
 import {
   QueryOrderDetail,
   QueryOrderDetailVariables,
@@ -39,6 +44,15 @@ const GQL_ON_ORDER = gql`
   ${FULL_ORDER_FRAGMENT}
 `;
 
+const GQL_UPDATE_ORDER = gql`
+  mutation OwnerUpdateOrder($id: Float!, $orderStatus: OrderStatus!) {
+    updateOrder(id: $id, orderStatus: $orderStatus) {
+      ok
+      error
+    }
+  }
+`;
+
 export const Order = () => {
   const { id } = useParams<IParams>();
   const { data, loading, error, subscribeToMore } = useQuery<
@@ -50,6 +64,22 @@ export const Order = () => {
     },
   });
   const { data: userData } = useMe();
+  const [updateOrder, { loading: mutationLoading }] = useMutation<
+    OwnerUpdateOrder,
+    OwnerUpdateOrderVariables
+  >(GQL_UPDATE_ORDER, {
+    refetchQueries: [
+      {
+        query: GQL_GET_ORDER,
+        variables: {
+          id: +id,
+        },
+      },
+    ],
+  });
+
+  const onButtonClick = async (status: OrderStatus) =>
+    await updateOrder({ variables: { id: +id, orderStatus: status } });
 
   useEffect(() => {
     subscribeToMore({
@@ -109,19 +139,39 @@ export const Order = () => {
                 ? "Not yet"
                 : data?.orderDetail?.order?.driver?.email}
             </div>
-            {userData?.me?.role === "Client" && (
+            {userData?.me?.role === UserRole.Client && (
               <div className=" w-full py-8 text-center text-lime-500 font-semibold text-lg">
                 Status:{data?.orderDetail?.order?.orderStatus}
               </div>
             )}
-            {userData?.me?.role === "Owner" && (
+            {userData?.me?.role === UserRole.Owner && (
               <>
-                {data?.orderDetail?.order?.orderStatus === "Pending" && (
-                  <button>Accept Order</button>
+                {data?.orderDetail?.order?.orderStatus ===
+                  OrderStatus.Pending && (
+                  <button
+                    className="auth__form_button"
+                    onClick={() => onButtonClick(OrderStatus.Cooking)}
+                  >
+                    Accept Order
+                  </button>
                 )}
-                {data?.orderDetail?.order?.orderStatus === "Cooking" && (
-                  <button>Order Cooked</button>
+                {data?.orderDetail?.order?.orderStatus ===
+                  OrderStatus.Cooking && (
+                  <button
+                    className="auth__form_button"
+                    onClick={() => onButtonClick(OrderStatus.Cooked)}
+                  >
+                    Order Cooked
+                  </button>
                 )}
+                {data?.orderDetail?.order?.orderStatus !==
+                  OrderStatus.Cooking &&
+                  data?.orderDetail?.order?.orderStatus ===
+                    OrderStatus.Cooked && (
+                    <div className=" w-full py-8 text-center text-lime-500 font-semibold text-lg">
+                      Status:{data?.orderDetail?.order?.orderStatus}
+                    </div>
+                  )}
               </>
             )}
           </div>

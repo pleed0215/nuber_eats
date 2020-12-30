@@ -22,6 +22,7 @@
     "apollo": "^2.31.2",
     "autoprefixer": "^9.8.6",
     "cypress": "^6.1.0",
+    "google-map-react": "^2.1.9",
     "graphql": "^15.4.0",
     "minio": "^7.0.17",
     "postcss": "^7.0.35",
@@ -68,6 +69,7 @@
   },
   "devDependencies": {
     "@testing-library/cypress": "^7.0.3",
+    "@types/google-map-react": "^2.1.0",
     "@types/minio": "^7.0.6"
   },
   "jest": {

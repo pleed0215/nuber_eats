@@ -745,3 +745,21 @@ updateQuery: (
 ```
 
 이런 코드가 만들어질 것.
+
+## 1. Driver Dashboard
+
+### Googlemaps api
+
+> npm i google-map-react
+
+- @types가 없으므로 같이 install
+
+### yesIWantToUseGoogleMapApiInternals
+
+- GoogleMapReact component에 위 prop을 건네주면, googleApi를 사용할 수 있다.
+- onGoogleApiloaded prop은 api가 loaded되었을 때 사용하는 콜백
+
+#### onGoogleApiLoaded
+
+- 콜백 함수 argument로 {map, maps} 두 가지가 있다.
+  [Google Map Javascript Api](https://developers.google.com/maps/documentation/javascript/overview?hl=ko)

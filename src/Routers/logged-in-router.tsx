@@ -25,6 +25,7 @@ import { CreateDish } from "../pages/restaurant/create.dish";
 import { UpdateRestaurant } from "../pages/restaurant/update.restaurant";
 import { UpdateDish } from "../pages/restaurant/update.dish";
 import { Order } from "../pages/order";
+import { DashBoard } from "../pages/driver/dashboard";
 
 interface IRouteItem {
   path: string;
@@ -80,6 +81,8 @@ const ownerRoutes: IRouteItem[] = [
     component: MyRestaurant,
   },
 ];
+
+const driversRoutes: IRouteItem[] = [{ path: "/", component: DashBoard }];
 
 const commonRoutes: IRouteItem[] = [
   {
@@ -146,6 +149,16 @@ export const LoggedInRouter = () => {
           ))}
         {data?.me?.role === UserRole.Owner &&
           ownerRoutes.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              exact={Boolean(route.exact)}
+            >
+              <route.component />
+            </Route>
+          ))}
+        {data?.me?.role === UserRole.Delivery &&
+          driversRoutes.map((route) => (
             <Route
               key={route.path}
               path={route.path}
