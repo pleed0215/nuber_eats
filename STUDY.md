@@ -763,3 +763,36 @@ updateQuery: (
 
 - 콜백 함수 argument로 {map, maps} 두 가지가 있다.
   [Google Map Javascript Api](https://developers.google.com/maps/documentation/javascript/overview?hl=ko)
+
+#### Child Component
+
+- GoogleMapReact component의 child component들은 lat, lng prop을 주면 해당 위치에 맞게 렌더링을 해주는 기능이 있다.
+
+```tsx
+<GoogleMapReact>
+  <div
+    // @ts-ignore
+    lng={lng}
+    lat={lat}
+    className="rounded-full w-8 h-8 bg-white flex justify-center items-center"
+  >
+    🚖
+  </div>
+</GoogleMapReact>
+```
+
+#### @types/googlemaps
+
+- This package contains type definitions for Google Maps JavaScript API
+
+#### directions api
+
+- 방향 화살표 관련된 api
+
+1.  GeoCoding
+
+- 주소를 주면 좌표를 준다.
+
+2. Reverse GeoCoding
+
+- 반대로 좌표를 주면 주소로 준다.
