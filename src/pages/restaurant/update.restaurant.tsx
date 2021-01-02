@@ -111,7 +111,7 @@ export const UpdateRestaurant = () => {
 
   return (
     <div className="layout__container">
-      <HelmetOnlyTitle title="Creating restaurant" />
+      <HelmetOnlyTitle title="Updating restaurant" />
       <h1 className="text-2xl font-semibold my-8">CreateRestaurant</h1>
       <form
         className="auth__form"

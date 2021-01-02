@@ -175,7 +175,7 @@ export const UpdateDish: React.FC = () => {
 
   return (
     <div className="layout__container">
-      <HelmetOnlyTitle title="Creating dish" />
+      <HelmetOnlyTitle title="Updating dish" />
       <h1 className="text-2xl font-semibold my-8">Create Dish</h1>
       <form
         className="auth__form"
