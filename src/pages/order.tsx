@@ -1,11 +1,8 @@
-import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { OrderStatus, UserRole } from "../codegen/globalTypes";
-import {
-  OnOrderUpdate,
-  OnOrderUpdateVariables,
-} from "../codegen/OnOrderUpdate";
+import { OnOrderUpdate } from "../codegen/OnOrderUpdate";
 import {
   OwnerUpdateOrder,
   OwnerUpdateOrderVariables,
@@ -64,7 +61,7 @@ export const Order = () => {
     },
   });
   const { data: userData } = useMe();
-  const [updateOrder, { loading: mutationLoading }] = useMutation<
+  const [updateOrder] = useMutation<
     OwnerUpdateOrder,
     OwnerUpdateOrderVariables
   >(GQL_UPDATE_ORDER, {
@@ -144,6 +141,21 @@ export const Order = () => {
                 Status:{data?.orderDetail?.order?.orderStatus}
               </div>
             )}
+            {userData?.me?.role === UserRole.Delivery &&
+              (data?.orderDetail?.order?.orderStatus ===
+              OrderStatus.Pickedup ? (
+                <button
+                  className="auth__form_button"
+                  onClick={() => onButtonClick(OrderStatus.Delivered)}
+                >
+                  Delivery Completed
+                </button>
+              ) : (
+                <div className=" w-full py-8 text-center text-lime-500 font-semibold text-lg">
+                  Status:{data?.orderDetail?.order?.orderStatus}
+                </div>
+              ))}
+
             {userData?.me?.role === UserRole.Owner && (
               <>
                 {data?.orderDetail?.order?.orderStatus ===
@@ -166,12 +178,15 @@ export const Order = () => {
                 )}
                 {data?.orderDetail?.order?.orderStatus !==
                   OrderStatus.Cooking &&
-                  data?.orderDetail?.order?.orderStatus ===
-                    OrderStatus.Cooked && (
-                    <div className=" w-full py-8 text-center text-lime-500 font-semibold text-lg">
-                      Status:{data?.orderDetail?.order?.orderStatus}
-                    </div>
-                  )}
+                data?.orderDetail?.order?.orderStatus === OrderStatus.Cooked ? (
+                  <div className=" w-full py-8 text-center text-lime-500 font-semibold text-lg">
+                    Status:{data?.orderDetail?.order?.orderStatus}
+                  </div>
+                ) : (
+                  <div className=" w-full py-8 text-center text-lime-500 font-semibold text-lg">
+                    Status:{data?.orderDetail?.order?.orderStatus}
+                  </div>
+                )}
               </>
             )}
           </div>

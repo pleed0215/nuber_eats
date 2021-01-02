@@ -3,12 +3,11 @@ import {
   faCalculator,
   faCartArrowDown,
   faCartPlus,
-  faDoorClosed,
   faDoorOpen,
   faHome,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useHistory, useParams } from "react-router-dom";
 import {
   MutationCreateOrder,
@@ -24,7 +23,6 @@ import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 import { CreateOrderItemInput } from "../../codegen/globalTypes";
 import { CartIcon } from "../../components/cart.icon";
 import { toast } from "react-toastify";
-import { create } from "cypress/types/lodash";
 
 interface IParam {
   id: string;

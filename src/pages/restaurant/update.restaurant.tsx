@@ -1,5 +1,5 @@
-import { gql, useApolloClient, useMutation, useQuery } from "@apollo/client";
-import { reset } from "cypress/types/sinon";
+import { gql, useMutation, useQuery } from "@apollo/client";
+
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useHistory, useParams } from "react-router-dom";
@@ -13,10 +13,10 @@ import {
   QueryMyRestaurant,
   QueryMyRestaurantVariables,
 } from "../../codegen/QueryMyRestaurant";
-import { QueryRestaurant } from "../../codegen/QueryRestaurant";
+
 import { FormButtonInactivable } from "../../components/form-button-inactivable";
 import { HelmetOnlyTitle } from "../../components/helmet.onlytitle";
-import { RESTAURANT_FRAGMENT } from "../../fragments";
+
 import { GQL_MYRESTAURANT } from "./my.restaurant";
 
 const GQL_UPDATE_RESTAURANT = gql`
@@ -55,7 +55,6 @@ export const UpdateRestaurant = () => {
     getValues,
     setValue,
     formState,
-    errors,
   } = useForm<IForm>({
     mode: "onChange",
   });

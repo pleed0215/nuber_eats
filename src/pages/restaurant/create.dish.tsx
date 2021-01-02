@@ -17,6 +17,7 @@ import {
 import { FormButtonInactivable } from "../../components/form-button-inactivable";
 import { HelmetOnlyTitle } from "../../components/helmet.onlytitle";
 import { DISH_FRAGMENT } from "../../fragments";
+import { BASE_URL } from "../../gloabl.constant";
 import { GQL_MYRESTAURANT } from "./my.restaurant";
 
 const GQL_CREATE_DISH = gql`
@@ -70,7 +71,7 @@ export const CreateDish: React.FC = () => {
   const history = useHistory();
   const [optionChoices, setOptionChoices] = useState<IChoiceInput[]>([]);
 
-  const [createDish, { loading, data, error }] = useMutation<
+  const [createDish, { loading, data }] = useMutation<
     MutationCreateDish,
     MutationCreateDishVariables
   >(GQL_CREATE_DISH, {
@@ -154,7 +155,7 @@ export const CreateDish: React.FC = () => {
         });
       });
       const { url: photo } = await (
-        await fetch(`http://lednas.synology.me:32789/upload/`, {
+        await fetch(`https://${BASE_URL}/upload/`, {
           method: "POST",
           body: formBody,
         })

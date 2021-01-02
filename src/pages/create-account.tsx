@@ -69,7 +69,7 @@ export const CreateAccountPage = () => {
             className="flex flex-col mt-2"
             onSubmit={handleSubmit(onSubmit)}
           >
-            <div className="flex flex-col">
+            <div className="auth__input_wrapper">
               <input
                 placeholder="Email"
                 name="email"
@@ -90,7 +90,7 @@ export const CreateAccountPage = () => {
                 <span className="auth__form_error">{errors.email.message}</span>
               )}
             </div>
-            <div className="flex flex-col">
+            <div className="auth__input_wrapper">
               <input
                 placeholder="Password"
                 name="password"
@@ -117,7 +117,7 @@ export const CreateAccountPage = () => {
                 </span>
               )}
             </div>
-            <div className="flex flex-col">
+            <div className="auth__input_wrapper">
               <select
                 name="role"
                 ref={register({ required: true })}

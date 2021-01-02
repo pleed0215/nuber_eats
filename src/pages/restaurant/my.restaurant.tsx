@@ -1,11 +1,5 @@
 import { gql, useQuery, useSubscription } from "@apollo/client";
-import {
-  faEdit,
-  faHome,
-  faRecycle,
-  faRemoveFormat,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faHome, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect } from "react";
 import { Link, useHistory, useParams } from "react-router-dom";

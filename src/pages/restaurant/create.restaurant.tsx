@@ -1,5 +1,5 @@
 import { gql, useApolloClient, useMutation } from "@apollo/client";
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -10,6 +10,7 @@ import {
 import { FormButtonInactivable } from "../../components/form-button-inactivable";
 import { HelmetOnlyTitle } from "../../components/helmet.onlytitle";
 import { RESTAURANT_FRAGMENT } from "../../fragments";
+import { BASE_URL } from "../../gloabl.constant";
 import { GQL_MYRESTAURANTS } from "./my.restaurants";
 
 const GQL_CREATE_RESTAURANT = gql`
@@ -88,13 +89,7 @@ export const CreateRestaurant = () => {
     },
   });
 
-  const {
-    register,
-    handleSubmit,
-    getValues,
-    formState,
-    errors,
-  } = useForm<IForm>({
+  const { register, handleSubmit, getValues, formState } = useForm<IForm>({
     mode: "onChange",
   });
   const onSubmit = async () => {
@@ -104,7 +99,7 @@ export const CreateRestaurant = () => {
       const formBody = new FormData();
       formBody.append("file", actualFile);
       const { url: coverImage } = await (
-        await fetch(`http://lednas.synology.me:32789/upload/`, {
+        await fetch(`https://${BASE_URL}/upload/`, {
           method: "POST",
           body: formBody,
         })

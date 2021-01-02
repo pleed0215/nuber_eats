@@ -6,9 +6,9 @@ import {
   split,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { TOKEN_NAME } from "./gloabl.constant";
+import { BASE_ENDPOINT, TOKEN_NAME } from "./gloabl.constant";
 import { WebSocketLink } from "@apollo/client/link/ws";
-import { SubscriptionClient } from "subscriptions-transport-ws";
+//import { SubscriptionClient } from "subscriptions-transport-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 
 export const getLSToken = () => localStorage.getItem(TOKEN_NAME);
@@ -17,8 +17,9 @@ export const isLoggedInVar = makeVar(Boolean(getLSToken()));
 export const authTokenVar = makeVar(getLSToken());
 
 //const BASE_ENDPOINT = "lednas.yoyang.io:32789/graphql";
-const BASE_ENDPOINT = "my.yoyang.io:32788/graphql";
-const HTTP_ENDPOINT = `http://${BASE_ENDPOINT}`;
+//const BASE_ENDPOINT = "my.yoyang.io:32788/graphql";
+
+const HTTP_ENDPOINT = `https://${BASE_ENDPOINT}`;
 const WS_ENDPOINT = `ws://${BASE_ENDPOINT}`;
 
 const httpLink = createHttpLink({

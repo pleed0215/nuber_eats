@@ -1,5 +1,5 @@
-import { gql, useApolloClient, useMutation, useQuery } from "@apollo/client";
-import React, { useState } from "react";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import React from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useHistory, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -13,8 +13,6 @@ import { QueryDish } from "../../codegen/QueryDish";
 import { FormButtonInactivable } from "../../components/form-button-inactivable";
 import { HelmetOnlyTitle } from "../../components/helmet.onlytitle";
 import { DISH_FRAGMENT } from "../../fragments";
-
-import { GQL_MYRESTAURANT } from "./my.restaurant";
 
 const GQL_UPDATE_DISH = gql`
   mutation MutationUpdateDish(
@@ -83,7 +81,7 @@ export const UpdateDish: React.FC = () => {
     },
   });
 
-  const [updateDish, { loading, data }] = useMutation<
+  const [updateDish, { loading }] = useMutation<
     MutationUpdateDish,
     MutationUpdateDishVariables
   >(GQL_UPDATE_DISH, {

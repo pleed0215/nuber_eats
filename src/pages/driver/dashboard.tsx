@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from "react";
 import GoogleMapReact from "google-map-react";
 import googleMapReact from "google-map-react";
-import { getCombinedModifierFlags } from "typescript";
-import { map } from "cypress/types/bluebird";
+import { gql, useMutation, useSubscription } from "@apollo/client";
+import { FULL_ORDER_FRAGMENT } from "../../fragments";
+import { OnCookedOrders } from "../../codegen/OnCookedOrders";
+import { useHistory } from "react-router-dom";
+import {
+  MutationOrderPick,
+  MutationOrderPickVariables,
+} from "../../codegen/MutationOrderPick";
+import { OrderStatus } from "../../codegen/globalTypes";
+import { toast } from "react-toastify";
 
 interface ICoords {
   lat: number;
@@ -14,6 +22,24 @@ interface IDriverProps {
   lng: number;
   $hover?: any;
 }
+
+const GQL_COOCKED_ORDERS = gql`
+  subscription OnCookedOrders {
+    cookedOrders {
+      ...FullOrderPart
+    }
+  }
+  ${FULL_ORDER_FRAGMENT}
+`;
+
+const GQL_ORDER_PICKED = gql`
+  mutation MutationOrderPick($id: Float!, $status: OrderStatus!) {
+    updateOrder(id: $id, orderStatus: $status) {
+      ok
+      error
+    }
+  }
+`;
 
 const Driver: React.FC<IDriverProps> = ({ lat, lng, $hover }) => (
   <div
@@ -37,6 +63,22 @@ export const DashBoard = () => {
   };
   const onError = (error: GeolocationPositionError) => {};
 
+  const { data: cookedOrdersData } = useSubscription<OnCookedOrders>(
+    GQL_COOCKED_ORDERS
+  );
+  const history = useHistory();
+  const [pickOrder] = useMutation<
+    MutationOrderPick,
+    MutationOrderPickVariables
+  >(GQL_ORDER_PICKED, {
+    onCompleted: (data: MutationOrderPick) => {
+      if (data.updateOrder.ok) {
+        toast.success("Order picked up.");
+        history.push(`/orders/${cookedOrdersData?.cookedOrders.id}`);
+      }
+    },
+  });
+
   useEffect(() => {
     navigator.geolocation.watchPosition(onSuccess, onError, {
       enableHighAccuracy: true,
@@ -58,10 +100,40 @@ export const DashBoard = () => {
     }
   }, [driverCoords.lat, driverCoords.lng]);
 
+  useEffect(() => {
+    if (cookedOrdersData?.cookedOrders?.id) {
+      onGetRouteClick();
+    }
+    return () => {};
+  }, [cookedOrdersData]);
+
   const onApiLoaded = ({ map, maps }: { map: any; maps: any }) => {
     setGoogleMap(map);
     setGoogleMaps(maps);
     map.panTo(new maps.LatLng(driverCoords.lat, driverCoords.lng));
+  };
+
+  const onGetRouteClick = () => {
+    if (googleMap) {
+      const directionsService = new google.maps.DirectionsService();
+      const directionsRenderer = new google.maps.DirectionsRenderer();
+      directionsRenderer.setMap(googleMap);
+      directionsService.route(
+        {
+          origin: {
+            location: new google.maps.LatLng(51.507351, -0.127758),
+          },
+          destination: {
+            location: new google.maps.LatLng(51.5127196, -0.1268353),
+          },
+          travelMode: google.maps.TravelMode.DRIVING,
+        },
+        (result, status) => {
+          console.log(result);
+          directionsRenderer.setDirections(result);
+        }
+      );
+    }
   };
 
   return (
@@ -76,6 +148,34 @@ export const DashBoard = () => {
         >
           <Driver lng={driverCoords.lng} lat={driverCoords.lat} />
         </GoogleMapReact>
+        {cookedOrdersData?.cookedOrders.restaurant ? (
+          <div className=" max-w-screen-sm  mx-auto bg-white relative -top-10 shadow-lg py-8 px-5">
+            <h1 className="text-center text-3xl font-medium">
+              New Cooked order
+            </h1>
+            <h4 className="text-center my-3 text-2xl font-medium">
+              Pick it up soon @{" "}
+              {cookedOrdersData?.cookedOrders.restaurant?.name}
+            </h4>
+            <button
+              className="auth__form_button w-full block text-center mt-5"
+              onClick={async () =>
+                await pickOrder({
+                  variables: {
+                    id: cookedOrdersData?.cookedOrders.id,
+                    status: OrderStatus.Pickedup,
+                  },
+                })
+              }
+            >
+              Accept Challenge &rarr;
+            </button>
+          </div>
+        ) : (
+          <div className=" max-w-screen-sm  mx-auto bg-white relative -top-10 shadow-lg py-8 px-5">
+            <h1 className="text-center text-3xl font-medium">No orders yet</h1>
+          </div>
+        )}
       </div>
     </div>
   );
