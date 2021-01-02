@@ -20,7 +20,8 @@ export const authTokenVar = makeVar(getLSToken());
 //const BASE_ENDPOINT = "my.yoyang.io:32788/graphql";
 
 const HTTP_ENDPOINT = `https://${BASE_ENDPOINT}`;
-const WS_ENDPOINT = `ws://${BASE_ENDPOINT}`;
+//const WS_ENDPOINT = `ws://${BASE_ENDPOINT}`;
+const WS_ENDPOINT = `wss://${BASE_ENDPOINT}`;
 
 const httpLink = createHttpLink({
   uri: HTTP_ENDPOINT,
