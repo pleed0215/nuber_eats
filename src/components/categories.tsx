@@ -8,7 +8,7 @@ interface ICategories {
 
 export const Categories: React.FC<ICategories> = ({ categories }) => {
   return (
-    <div className="w-full flex justify-around items-center mb-5">
+    <div className="w-full flex justify-around items-center mb-5 overflow-x-scroll">
       {categories?.map((category) => (
         <CategoryItem
           key={category.id}

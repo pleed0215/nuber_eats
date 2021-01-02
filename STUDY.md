@@ -796,3 +796,7 @@ updateQuery: (
 2. Reverse GeoCoding
 
 - 반대로 좌표를 주면 주소로 준다.
+
+apollo client 버그???
+
+- apollo client 3.3.1 subscription 버그가 있나?? 3.2.7로 다운그레이드 했더니 괜찮아졌다.

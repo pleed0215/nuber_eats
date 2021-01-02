@@ -76,17 +76,18 @@ export const MyRestaurant = () => {
     },
   });
 
-  const { data: subscriptionData } = useSubscription<OnPendingOrders>(
-    GQL_PENDING_ORDERS
-  );
+  const {
+    data: subscriptionData,
+    loading: subscriptionLoading,
+  } = useSubscription<OnPendingOrders>(GQL_PENDING_ORDERS);
+
   const history = useHistory();
 
-  useEffect(() => {
-    console.log(subscriptionData);
-    if (subscriptionData?.pendingOrders.id) {
-      history.push(`/orders/${subscriptionData.pendingOrders.id}`);
-    }
-  }, [subscriptionData]);
+  console.log(subscriptionLoading);
+
+  if (!subscriptionLoading && subscriptionData?.pendingOrders?.id) {
+    history.push(`/orders/${subscriptionData.pendingOrders.id}`);
+  }
 
   if (data && !loading) {
     data.restaurant?.restaurant?.orders?.forEach((order) => {
