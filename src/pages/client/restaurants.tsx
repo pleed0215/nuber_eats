@@ -84,7 +84,7 @@ export const RestaurantsPage = () => {
     <div className="w-full">
       <HelmetOnlyTitle title="Restaurants.." />
       <form
-        className="w-full py-40 flex items-center justify-center bg-gray-800"
+        className="w-full py-40 px-20 flex items-center justify-center bg-gray-800 sm:px-20"
         action="search"
         onSubmit={handleSubmit(onSubmit)}
       >
@@ -92,7 +92,7 @@ export const RestaurantsPage = () => {
           type="search"
           name="searchTerm"
           ref={register({ required: true, minLength: 3 })}
-          className="form_input w-5/12 sm:w-1/2 rounded-md"
+          className="form_input max-w-screen-md w-full  md:max-w-screen-sm sm:max-w-screen-sm rounded-md"
           placeholder="Search restaurants..."
         />
       </form>
