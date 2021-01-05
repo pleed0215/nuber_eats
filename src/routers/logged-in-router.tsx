@@ -26,6 +26,7 @@ import { UpdateRestaurant } from "../pages/restaurant/update.restaurant";
 import { UpdateDish } from "../pages/restaurant/update.dish";
 import { Order } from "../pages/order";
 import { DashBoard } from "../pages/driver/dashboard";
+import { MyPage } from "../pages/my.page";
 
 interface IRouteItem {
   path: string;
@@ -105,6 +106,10 @@ const commonRoutes: IRouteItem[] = [
     path: "/orders/:id",
     component: Order,
   },
+  {
+    path:"/my-page",
+    component: MyPage
+  }
 ];
 
 export const LoggedInRouter = () => {

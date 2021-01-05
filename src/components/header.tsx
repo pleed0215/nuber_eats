@@ -22,7 +22,7 @@ export const Header: React.FC = () => {
             </Link>
           </div>
           <div>
-            <Link to="/me">
+            <Link to="/my-page">
               <span className="text-lg mr-6 hover:underline">
                 <FontAwesomeIcon icon={faUserAlt} className="mr-2" />
                 {data?.me?.email}
