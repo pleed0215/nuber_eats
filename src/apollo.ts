@@ -19,7 +19,7 @@ export const authTokenVar = makeVar(getLSToken());
 //const BASE_ENDPOINT = "lednas.yoyang.io:32789/graphql";
 //const BASE_ENDPOINT = "my.yoyang.io:32788/graphql";
 
-const addSIfProduction = () => "s";
+const addSIfProduction = () => "";
 //process.env.NODE_ENV === "production" ? "s" : "";
 
 const HTTP_ENDPOINT = `http${addSIfProduction()}://${BASE_ENDPOINT}`;

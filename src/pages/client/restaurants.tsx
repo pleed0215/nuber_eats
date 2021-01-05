@@ -78,8 +78,6 @@ export const RestaurantsPage = () => {
     });
   };
 
-  console.log(data?.allRestaurants.restaurants);
-
   return (
     <div className="w-full">
       <HelmetOnlyTitle title="Restaurants.." />
