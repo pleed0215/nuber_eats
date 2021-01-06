@@ -113,6 +113,7 @@ export const Restaurant = () => {
       (dish) => dish.id === id
     );
     if (dish !== undefined) {
+      window.scrollTo(0, 0);
       setDishInfo(dish);
       setTotalPay(dish.price);
     }
