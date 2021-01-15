@@ -1,12 +1,6 @@
 import React, { useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Redirect,
-  Route,
-  Switch,
-  useHistory,
-} from "react-router-dom";
-import { toast } from "react-toastify";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+
 import { UserRole } from "../codegen/globalTypes";
 import { Header } from "../components/header";
 import { useMe } from "../hooks/useMe";
@@ -24,7 +18,7 @@ import { UpdatePassword } from "../pages/user/password.page";
 import { VerificationPage } from "../pages/user/verification.page";
 import { CreateDish } from "../pages/restaurant/create.dish";
 import { UpdateRestaurant } from "../pages/restaurant/update.restaurant";
-import { UpdateDish } from "../pages/restaurant/update.dish.deprecated";
+
 import { Order } from "../pages/order";
 import { DashBoard } from "../pages/driver/dashboard";
 import { MyPage } from "../pages/my.page";
@@ -70,7 +64,7 @@ const ownerRoutes: IRouteItem[] = [
   },
   {
     path: "/my-restaurant/:restaurantId/:dishId/update",
-    component: UpdateDish,
+    component: CreateDish,
     exact: true,
   },
   {

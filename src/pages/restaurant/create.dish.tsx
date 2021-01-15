@@ -1,7 +1,13 @@
-import { gql, useApolloClient, useMutation, useQuery } from "@apollo/client";
+import {
+  gql,
+  useApolloClient,
+  useLazyQuery,
+  useMutation,
+  useQuery,
+} from "@apollo/client";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useHistory, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -10,6 +16,7 @@ import {
   MutationCreateDish,
   MutationCreateDishVariables,
 } from "../../codegen/MutationCreateDish";
+import { QueryDish } from "../../codegen/QueryDish";
 import {
   QueryMyRestaurant,
   QueryMyRestaurant_restaurant_restaurant_dishes,
@@ -81,6 +88,69 @@ interface IChoiceInput {
   choicesInfo: IChoiceInfo[] | null;
 }
 
+interface INestedChoice {
+  register: any;
+  control: any;
+  field: any;
+  namePrefix: any;
+}
+
+const NestedChoice: React.FC<INestedChoice> = ({
+  register,
+  control,
+  field,
+  namePrefix,
+}) => {
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: namePrefix,
+  });
+
+  return (
+    <div className="w-full">
+      <span
+        className="cursor-pointer text-xs py-1 px-2 bg-lime-300 text-lime-600 rounded-md hover:bg-lime-600 hover:text-lime-300 transition duration-200 mr-4"
+        onClick={() => append({ name: "helloff", extra: 11 })}
+      >
+        Add choice
+      </span>
+      {fields.map((choice, choiceIndex) => (
+        <div key={choice.id} className="flex justify-around items-center mt-2">
+          <div className="w-1/6">
+            <span>Choice #{choiceIndex + 1}</span>
+          </div>
+          <div className="w-2/6 mr-3">
+            <input
+              className="auth__form_input"
+              type="text"
+              name={`${namePrefix}[${choiceIndex}].name`}
+              placeholder="Name"
+              defaultValue={`${choice.name}`}
+              ref={register({ required: true })}
+            />
+          </div>
+          <div className=" w-2/6">
+            <input
+              className="auth__form_input"
+              type="number"
+              name={`${namePrefix}[${choiceIndex}].extra`}
+              placeholder="Extra"
+              defaultValue={`${choice.extra}`}
+              ref={register({ required: true, min: 0 })}
+            />
+          </div>
+          <div
+            onClick={() => remove(choiceIndex)}
+            className="cursor-pointer text-xs px-2 py-1 text-center bg-red-300 text-red-600 rounded-md hover:bg-red-600 hover:text-red-300 transition duration-200 ml-3"
+          >
+            <FontAwesomeIcon icon={faTrashAlt} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export const CreateDish: React.FC = () => {
   const client = useApolloClient();
   const history = useHistory();
@@ -88,14 +158,31 @@ export const CreateDish: React.FC = () => {
 
   const { restaurantId, dishId } = useParams<IParams>();
 
-  const { data: dishData, loading: dishLoading } = useQuery<QueryDish>(
-    GQL_DISH,
-    {
-      variables: {
-        id: +dishId,
-      },
+  const [
+    updateDish,
+    { data: dishData, loading: dishLoading },
+  ] = useLazyQuery<QueryDish>(GQL_DISH, {
+    onCompleted: (data: QueryDish) => {
+      setValue("name", dishData.getDish.dish.name);
+      setValue("description", dishData.getDish.dish.description);
+      setValue("price", dishData.getDish.dish.price);
+      dishData.getDish.dish.options.forEach((option) => {
+        appendOption({ name: option.name, extra: option.extra });
+      });
+
+      console.log(dishData.getDish.dish);
+    },
+  });
+
+  useEffect(() => {
+    if (dishId) {
+      updateDish({
+        variables: {
+          id: +dishId,
+        },
+      });
     }
-  );
+  }, []);
 
   const [createDish, { loading, data }] = useMutation<
     MutationCreateDish,
@@ -210,9 +297,7 @@ export const CreateDish: React.FC = () => {
   };
 
   const onAddClicked = () => {
-    appendOption({
-      value: "",
-    });
+    appendOption({ value: "afaf" });
   };
   const onDeleteClicked = (index) => {
     // @ts-ignore
@@ -279,7 +364,9 @@ export const CreateDish: React.FC = () => {
   return (
     <div className="layout__container">
       <HelmetOnlyTitle title="Creating dish" />
-      <h1 className="text-2xl font-semibold my-8">Create Dish</h1>
+      <h1 className="text-2xl font-semibold my-8">
+        {dishData ? "Update Dish" : "Create Dish"}
+      </h1>
       {/* Main form start. 
           Must implment double nested input.
           Ex) Dish > Choices 
@@ -374,12 +461,6 @@ export const CreateDish: React.FC = () => {
                       {`#${optionIndex + 1} Option`}
                     </span>
                     <span
-                      className="cursor-pointer text-xs py-1 px-2 bg-lime-300 text-lime-600 rounded-md hover:bg-lime-600 hover:text-lime-300 transition duration-200 mr-4"
-                      onClick={() => onAddChoiceClicked(optionIndex)}
-                    >
-                      Add choice
-                    </span>
-                    <span
                       className="cursor-pointer text-xs py-1 px-2 bg-red-300 text-red-600 rounded-md hover:bg-red-600 hover:text-red-300 transition duration-200"
                       onClick={() => onDeleteClicked(optionIndex)}
                     >
@@ -407,8 +488,16 @@ export const CreateDish: React.FC = () => {
                     </div>
                     {/* Double nested dynamic field for options->choice. Not using useArrayField.. 
                     in fact cannot use for double nested dynamic field.. */}
-                    <div className="flex flex-col justify-center items-start w-2/3 ml-20">
-                      {optionChoices.map((o) => {
+                    <div className="flex flex-col justify-center items-start w-2/3">
+                      <NestedChoice
+                        key={`options[${optionIndex}]`}
+                        register={register}
+                        control={control}
+                        field={field}
+                        namePrefix={`options[${optionIndex}].choices`}
+                      />
+
+                      {/*{optionChoices.map((o) => {
                         if (o.optionIndex !== optionIndex) {
                           return <></>;
                         } else {
@@ -467,7 +556,7 @@ export const CreateDish: React.FC = () => {
                               )
                           );
                         }
-                      })}
+                      })}*/}
                     </div>
                   </div>
                 ))}
@@ -479,7 +568,7 @@ export const CreateDish: React.FC = () => {
           isActivate={formState.isValid && !formState.isSubmitting}
           loading={loading}
         >
-          Create Dish
+          {dishData ? "Update Dish" : "Create Dish"}
         </FormButtonInactivable>
       </form>
       {data?.createDish.error && (
