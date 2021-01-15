@@ -1,4 +1,4 @@
-import { gql, useApolloClient, useMutation } from "@apollo/client";
+import { gql, useApolloClient, useMutation, useQuery } from "@apollo/client";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
@@ -33,9 +33,23 @@ const GQL_CREATE_DISH = gql`
   ${DISH_FRAGMENT}
 `;
 
+const GQL_DISH = gql`
+  query QueryDish($id: Int!) {
+    getDish(dishId: $id) {
+      ok
+      error
+      dish {
+        ...DishPart
+      }
+    }
+  }
+  ${DISH_FRAGMENT}
+`;
+
 interface IChoice {
   name: string;
   extra: number;
+  isRemoved: boolean;
 }
 
 interface IOptions {
@@ -52,7 +66,8 @@ interface ICreateDishForm {
 }
 
 interface IParams {
-  id: string;
+  restaurantId: string;
+  dishId: string;
 }
 
 interface IChoiceInfo {
@@ -63,13 +78,24 @@ interface IChoiceInfo {
 
 interface IChoiceInput {
   optionIndex: number;
-  choicesInfo?: IChoiceInfo[] | null;
+  choicesInfo: IChoiceInfo[] | null;
 }
 
 export const CreateDish: React.FC = () => {
   const client = useApolloClient();
   const history = useHistory();
   const [optionChoices, setOptionChoices] = useState<IChoiceInput[]>([]);
+
+  const { restaurantId, dishId } = useParams<IParams>();
+
+  const { data: dishData, loading: dishLoading } = useQuery<QueryDish>(
+    GQL_DISH,
+    {
+      variables: {
+        id: +dishId,
+      },
+    }
+  );
 
   const [createDish, { loading, data }] = useMutation<
     MutationCreateDish,
@@ -115,6 +141,7 @@ export const CreateDish: React.FC = () => {
     formState,
     handleSubmit,
     getValues,
+    setValue,
     control,
     errors,
   } = useForm<ICreateDishForm>({
@@ -129,7 +156,6 @@ export const CreateDish: React.FC = () => {
     name: "options",
   });
 
-  const { id: restaurantId } = useParams<IParams>();
   const onSubmit = async () => {
     try {
       const { name, price, description, file, options } = getValues();
@@ -137,7 +163,7 @@ export const CreateDish: React.FC = () => {
       const actualFile = file[0];
       const formBody = new FormData();
       formBody.append("file", actualFile);
-      console.log("option", options);
+
       options?.forEach((option) => {
         const dishChoices: DishChoiceType[] | null = option?.choice ? [] : null;
 
@@ -154,13 +180,13 @@ export const CreateDish: React.FC = () => {
           choices: dishChoices,
         });
       });
+
       const { url: photo } = await (
         await fetch(`https://${BASE_URL}/upload/`, {
           method: "POST",
           body: formBody,
         })
       ).json();
-      console.log("dishoption", dishOptions);
       await createDish({
         variables: {
           input: {
@@ -176,7 +202,10 @@ export const CreateDish: React.FC = () => {
 
       history.goBack();
     } catch (error) {
-      console.log(error);
+      toast.error(
+        `Some error while creating dish with error: ${error.message}`
+      );
+      history.push("/");
     }
   };
 
@@ -203,9 +232,9 @@ export const CreateDish: React.FC = () => {
           optionChoices[arrayIndex]?.choicesInfo?.length
         ),
         isExist: true,
-        choice: { name: "", extra: 0 },
+        choice: { name: "", extra: 0, isRemoved: false },
       });
-      console.log(optionChoices);
+
       setOptionChoices([...optionChoices]);
     } else {
       setOptionChoices((current) => [
@@ -216,7 +245,7 @@ export const CreateDish: React.FC = () => {
             {
               index: makeChoiceString(index, 0),
               isExist: true,
-              choice: { name: "", extra: 0 },
+              choice: { name: "", extra: 0, isRemoved: false },
             },
           ],
         },
@@ -225,25 +254,36 @@ export const CreateDish: React.FC = () => {
   };
 
   const onRemoveChoiceClicked = (index, choiceIndex) => {
-    const arrayIndex = optionChoices.findIndex(
+    /*const arrayIndex = optionChoices.findIndex(
       (choice) => choice.optionIndex === index
-    );
+    );*/
 
-    if (arrayIndex !== -1) {
+    optionChoices[index].choicesInfo[choiceIndex].isExist = false;
+    setValue(`options[${index}].choice[${choiceIndex}].isRemoved`, true);
+    setValue(`options[${index}].choice[${choiceIndex}].name`, "removed");
+    //optionChoices[arrayIndex].choicesInfo?.forEach(choiceIndex);
+    setOptionChoices([...optionChoices]);
+
+    /*if (arrayIndex !== -1) {
       optionChoices[arrayIndex].choicesInfo = optionChoices[
         arrayIndex
       ]?.choicesInfo?.filter((choice) => {
         return choice.index !== makeChoiceString(index, choiceIndex);
       });
+      console.log(optionChoices);
       //optionChoices[arrayIndex].choicesInfo?.forEach(choiceIndex);
       setOptionChoices([...optionChoices]);
-    }
+    }*/
   };
 
   return (
     <div className="layout__container">
       <HelmetOnlyTitle title="Creating dish" />
       <h1 className="text-2xl font-semibold my-8">Create Dish</h1>
+      {/* Main form start. 
+          Must implment double nested input.
+          Ex) Dish > Choices 
+      */}
       <form
         className="auth__form"
         onSubmit={handleSubmit(onSubmit)}
@@ -252,6 +292,7 @@ export const CreateDish: React.FC = () => {
         <p className="text-xl italic text-black mb-2">
           Write dish information here.
         </p>
+        {/* Dish information. Name, Price, Description */}
         <div className="auth__input_wrapper">
           <input
             className="auth__form_input"
@@ -305,6 +346,7 @@ export const CreateDish: React.FC = () => {
             ref={register({ required: true })}
           />
         </div>
+        {/* Starting Option part. Must be dynamic field. It is implemented by React Form Hook useFieldArray and it is easy to use. */}
         <div className="border-t border-gray-600 mt-2 pt-2">
           <p className="text-xl italic">Dish options</p>
           <span
@@ -322,23 +364,24 @@ export const CreateDish: React.FC = () => {
               </div>
             ) : (
               <div>
-                {optionFields.map((field, index) => (
+                {/* useFieldArray() returns fields, append, remove, so on. */}
+                {optionFields.map((field, optionIndex) => (
                   <div
                     key={field.id}
                     className="border border-gray-500 p-5 mb-2"
                   >
                     <span className="inline-block mb-2 mr-4">
-                      {`#${index + 1} Option`}
+                      {`#${optionIndex + 1} Option`}
                     </span>
                     <span
                       className="cursor-pointer text-xs py-1 px-2 bg-lime-300 text-lime-600 rounded-md hover:bg-lime-600 hover:text-lime-300 transition duration-200 mr-4"
-                      onClick={() => onAddChoiceClicked(index)}
+                      onClick={() => onAddChoiceClicked(optionIndex)}
                     >
                       Add choice
                     </span>
                     <span
                       className="cursor-pointer text-xs py-1 px-2 bg-red-300 text-red-600 rounded-md hover:bg-red-600 hover:text-red-300 transition duration-200"
-                      onClick={() => onDeleteClicked(index)}
+                      onClick={() => onDeleteClicked(optionIndex)}
                     >
                       Delete me
                     </span>
@@ -347,7 +390,7 @@ export const CreateDish: React.FC = () => {
                         <input
                           className="auth__form_input"
                           type="text"
-                          name={`options[${index}].name`}
+                          name={`options[${optionIndex}].name`}
                           placeholder="Name"
                           ref={register({ required: true })}
                         />
@@ -356,15 +399,17 @@ export const CreateDish: React.FC = () => {
                         <input
                           className="auth__form_input"
                           type="number"
-                          name={`options[${index}].extra`}
+                          name={`options[${optionIndex}].extra`}
                           placeholder="Extra"
                           ref={register({ required: true, min: 0 })}
                         />
                       </div>
                     </div>
+                    {/* Double nested dynamic field for options->choice. Not using useArrayField.. 
+                    in fact cannot use for double nested dynamic field.. */}
                     <div className="flex flex-col justify-center items-start w-2/3 ml-20">
                       {optionChoices.map((o) => {
-                        if (o.optionIndex !== index) {
+                        if (o.optionIndex !== optionIndex) {
                           return <></>;
                         } else {
                           return o.choicesInfo?.map(
@@ -384,7 +429,7 @@ export const CreateDish: React.FC = () => {
                                     <input
                                       className="auth__form_input"
                                       type="text"
-                                      name={`options[${index}].choice[${choiceIndex}].name`}
+                                      name={`options[${optionIndex}].choice[${choiceIndex}].name`}
                                       placeholder="Name"
                                       defaultValue=""
                                       ref={register({ required: true })}
@@ -394,15 +439,25 @@ export const CreateDish: React.FC = () => {
                                     <input
                                       className="auth__form_input"
                                       type="number"
-                                      name={`options[${index}].choice[${choiceIndex}].extra`}
+                                      name={`options[${optionIndex}].choice[${choiceIndex}].extra`}
                                       placeholder="Extra"
-                                      defaultValue=""
+                                      defaultValue="0"
                                       ref={register({ required: true, min: 0 })}
+                                    />
+                                    <input
+                                      type="checkbox"
+                                      name={`options[${optionIndex}].choice[${choiceIndex}].isRemoved`}
+                                      defaultValue={0}
+                                      ref={register()}
+                                      hidden
                                     />
                                   </div>
                                   <div
                                     onClick={() =>
-                                      onRemoveChoiceClicked(index, choiceIndex)
+                                      onRemoveChoiceClicked(
+                                        optionIndex,
+                                        choiceIndex
+                                      )
                                     }
                                     className="cursor-pointer text-xs px-2 py-1 text-center bg-red-300 text-red-600 rounded-md hover:bg-red-600 hover:text-red-300 transition duration-200 ml-3"
                                   >

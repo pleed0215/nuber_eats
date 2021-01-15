@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
+  Redirect,
   Route,
   Switch,
   useHistory,
@@ -23,10 +24,13 @@ import { UpdatePassword } from "../pages/user/password.page";
 import { VerificationPage } from "../pages/user/verification.page";
 import { CreateDish } from "../pages/restaurant/create.dish";
 import { UpdateRestaurant } from "../pages/restaurant/update.restaurant";
-import { UpdateDish } from "../pages/restaurant/update.dish";
+import { UpdateDish } from "../pages/restaurant/update.dish.deprecated";
 import { Order } from "../pages/order";
 import { DashBoard } from "../pages/driver/dashboard";
 import { MyPage } from "../pages/my.page";
+import { TOKEN_NAME } from "../gloabl.constant";
+import { authTokenVar, isLoggedInVar } from "../apollo";
+import { useApolloClient } from "@apollo/client";
 
 interface IRouteItem {
   path: string;
@@ -70,7 +74,7 @@ const ownerRoutes: IRouteItem[] = [
     exact: true,
   },
   {
-    path: "/my-restaurant/:id/create-dish",
+    path: "/my-restaurant/:restaurantId/create-dish",
     component: CreateDish,
   },
   {
@@ -107,26 +111,28 @@ const commonRoutes: IRouteItem[] = [
     component: Order,
   },
   {
-    path:"/my-page",
-    component: MyPage
-  }
+    path: "/my-page",
+    component: MyPage,
+  },
 ];
 
 export const LoggedInRouter = () => {
   const { data, loading, error } = useMe();
-  const history = useHistory();
+  const client = useApolloClient();
 
-  if (error) {
-    toast.error("Critical error found..");
-    history.push("/");
-  }
-
-  if (!data || loading) {
+  if (loading) {
     return (
       <div className="h-screen flex justify-center items-center">
         <span className="font-medium text-xl tracking-wide">Loading...</span>
       </div>
     );
+  }
+
+  if (!loading && error) {
+    localStorage.removeItem(TOKEN_NAME);
+    isLoggedInVar(false);
+    authTokenVar(null);
+    client.cache.reset();
   }
 
   return (
@@ -172,6 +178,7 @@ export const LoggedInRouter = () => {
               <route.component />
             </Route>
           ))}
+
         <Route>
           <NotFound />
         </Route>
