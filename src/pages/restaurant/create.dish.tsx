@@ -154,7 +154,6 @@ const NestedChoice: React.FC<INestedChoice> = ({
 export const CreateDish: React.FC = () => {
   const client = useApolloClient();
   const history = useHistory();
-  const [optionChoices, setOptionChoices] = useState<IChoiceInput[]>([]);
 
   const { restaurantId, dishId } = useParams<IParams>();
 
@@ -249,6 +248,7 @@ export const CreateDish: React.FC = () => {
       const dishOptions: DishOptionType[] = [];
       const actualFile = file[0];
       const formBody = new FormData();
+
       formBody.append("file", actualFile);
 
       options?.forEach((option) => {
@@ -302,63 +302,6 @@ export const CreateDish: React.FC = () => {
   const onDeleteClicked = (index) => {
     // @ts-ignore
     removeOption(index);
-  };
-  const makeChoiceString = (index, choiceIndex) =>
-    `${index}-${choiceIndex} choice`;
-  const onAddChoiceClicked = (index) => {
-    const arrayIndex = optionChoices.findIndex(
-      (choice) => choice.optionIndex === index
-    );
-
-    if (arrayIndex !== -1) {
-      optionChoices[arrayIndex]?.choicesInfo?.push({
-        index: makeChoiceString(
-          index,
-          optionChoices[arrayIndex]?.choicesInfo?.length
-        ),
-        isExist: true,
-        choice: { name: "", extra: 0, isRemoved: false },
-      });
-
-      setOptionChoices([...optionChoices]);
-    } else {
-      setOptionChoices((current) => [
-        ...current,
-        {
-          optionIndex: index,
-          choicesInfo: [
-            {
-              index: makeChoiceString(index, 0),
-              isExist: true,
-              choice: { name: "", extra: 0, isRemoved: false },
-            },
-          ],
-        },
-      ]);
-    }
-  };
-
-  const onRemoveChoiceClicked = (index, choiceIndex) => {
-    /*const arrayIndex = optionChoices.findIndex(
-      (choice) => choice.optionIndex === index
-    );*/
-
-    optionChoices[index].choicesInfo[choiceIndex].isExist = false;
-    setValue(`options[${index}].choice[${choiceIndex}].isRemoved`, true);
-    setValue(`options[${index}].choice[${choiceIndex}].name`, "removed");
-    //optionChoices[arrayIndex].choicesInfo?.forEach(choiceIndex);
-    setOptionChoices([...optionChoices]);
-
-    /*if (arrayIndex !== -1) {
-      optionChoices[arrayIndex].choicesInfo = optionChoices[
-        arrayIndex
-      ]?.choicesInfo?.filter((choice) => {
-        return choice.index !== makeChoiceString(index, choiceIndex);
-      });
-      console.log(optionChoices);
-      //optionChoices[arrayIndex].choicesInfo?.forEach(choiceIndex);
-      setOptionChoices([...optionChoices]);
-    }*/
   };
 
   return (
@@ -472,6 +415,7 @@ export const CreateDish: React.FC = () => {
                           className="auth__form_input"
                           type="text"
                           name={`options[${optionIndex}].name`}
+                          defaultValue={`${field.name}`}
                           placeholder="Name"
                           ref={register({ required: true })}
                         />
@@ -481,6 +425,7 @@ export const CreateDish: React.FC = () => {
                           className="auth__form_input"
                           type="number"
                           name={`options[${optionIndex}].extra`}
+                          defaultValue={`${field.extra}`}
                           placeholder="Extra"
                           ref={register({ required: true, min: 0 })}
                         />
