@@ -14,6 +14,9 @@ export const CartIcon: React.FC<ICartIcon> = ({ n = 0 }) => {
       <div>
         <FontAwesomeIcon icon={faCartPlus} />
       </div>
+      {n > 0 && (
+        <div className="w-4 h-4 absolute -top-1 rounded-full -right-1 text-xs bg-red-600 text-white flex justify-center p-1 items-center opacity-75 animate-ping" />
+      )}
       <div className="w-4 h-4 absolute -top-1 rounded-full -right-1 text-xs bg-red-600 text-white flex justify-center p-1 items-center">
         {n}
       </div>

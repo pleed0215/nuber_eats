@@ -1,4 +1,5 @@
 import React from "react";
+import { Loader } from "./loader";
 
 type FormButtonInactivableType = {
   isActivate?: boolean;
@@ -10,7 +11,10 @@ export const FormButtonInactivable: React.FC<FormButtonInactivableType> = ({
   loading,
   children,
 }) => (
-  <button className="auth__form_button" disabled={!isActivate}>
-    {loading ? "Processing..." : children}
+  <button
+    className="auth__form_button flex justify-center"
+    disabled={!isActivate}
+  >
+    {loading ? <Loader color="" /> : children}
   </button>
 );

@@ -6,6 +6,7 @@ import {
   QueryCategoryVariables,
 } from "../../codegen/QueryCategory";
 import { HelmetOnlyTitle } from "../../components/helmet.onlytitle";
+import { Loader } from "../../components/loader";
 import { Restaurants } from "../../components/restaurants";
 
 import { CATEGORY_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
@@ -51,10 +52,12 @@ export const CategoryPage = () => {
   );
 
   return (
-    <div className="w-full">
+    <div className="w-full text-center">
       <HelmetOnlyTitle title={`Category: ${data?.category.category?.name}`} />
       {loading ? (
-        <h1>Loading...</h1>
+        <div className="w-full flex justify-center items-center">
+          <Loader />
+        </div>
       ) : (
         <Restaurants
           restaurants={data?.category.restaurants}

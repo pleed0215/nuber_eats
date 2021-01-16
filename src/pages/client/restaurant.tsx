@@ -23,6 +23,7 @@ import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
 import { CreateOrderItemInput } from "../../codegen/globalTypes";
 import { CartIcon } from "../../components/cart.icon";
 import { toast } from "react-toastify";
+import { Loader } from "../../components/loader";
 
 interface IParam {
   id: string;
@@ -94,7 +95,6 @@ export const Restaurant = () => {
   >(GQL_ORDER, {
     onCompleted: ({ createOrder: { ok, orderId } }: MutationCreateOrder) => {
       if (ok) {
-        console.log(createOrder);
         setNowOrdering(false);
         setSeeCart(false);
         toast.success(
@@ -108,12 +108,19 @@ export const Restaurant = () => {
     },
   });
 
+  const onScroll = (e) => {
+    e.preventDefault();
+    window.scrollTo(0, 0);
+  };
   const onDishClicked = (id) => {
     const dish = data?.restaurant.restaurant?.dishes?.find(
       (dish) => dish.id === id
     );
     if (dish !== undefined) {
       window.scrollTo(0, 0);
+      window.onscroll = () => {
+        window.scrollTo(0, 0);
+      };
       setDishInfo(dish);
       setTotalPay(dish.price);
     }
@@ -161,6 +168,7 @@ export const Restaurant = () => {
   };
 
   const onOrderClosed = () => {
+    window.onscroll = () => {};
     setDishInfo(null);
     setTotalPay(0);
     setOptions([]);
@@ -215,15 +223,15 @@ export const Restaurant = () => {
   return (
     <div className="w-full flex justify-contern">
       {loading ? (
-        <div className="w-screen h-screen flex justify-content items-center">
-          <h1>Loading...</h1>
+        <div className="w-screen h-screen flex justify-center items-center">
+          <Loader />
         </div>
       ) : error || !data?.restaurant.ok ? (
         <div className="w-screen h-screen flex justify-content items-center">
           <h1>Data fetching error</h1>
         </div>
       ) : (
-        <div className="w-full flex flex-col items-center">
+        <div className={`w-full flex flex-col items-center`}>
           <div
             className="w-full h-80 bg-cover bg-center flex items-center"
             style={{
@@ -336,8 +344,8 @@ export const Restaurant = () => {
                     <FontAwesomeIcon icon={faCalculator} className="mr-2" />
                     Total: ${totalOrderPay}
                   </p>
-                  <p className="text-center">
-                    {nowOrdering ? "Ordering ...." : "Order Now"}
+                  <p className="text-center flex justify-center">
+                    {nowOrdering ? <Loader /> : "Order Now"}
                   </p>
                   <p></p>
                 </div>

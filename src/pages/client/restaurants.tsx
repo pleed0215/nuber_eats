@@ -9,6 +9,7 @@ import { useHistory } from "react-router-dom";
 import { HelmetOnlyTitle } from "../../components/helmet.onlytitle";
 import { Categories } from "../../components/categories";
 import { Restaurants } from "../../components/restaurants";
+import { Loader } from "../../components/loader";
 
 // backend에 page를 Number로 주는 바람에... page type이 Float이다.. 나중에 수정해야 한다.
 const GQL_RESTAURANTS = gql`
@@ -79,34 +80,40 @@ export const RestaurantsPage = () => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col justify-center items-center">
       <HelmetOnlyTitle title="Restaurants.." />
-      <form
-        className="w-full py-40 px-20 flex items-center justify-center bg-gray-800 sm:px-20"
-        action="search"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <input
-          type="search"
-          name="searchTerm"
-          ref={register({ required: true, minLength: 3 })}
-          className="form_input max-w-screen-md w-full  md:max-w-screen-sm sm:max-w-screen-sm rounded-md"
-          placeholder="Search restaurants..."
-        />
-      </form>
-      <div className="layout__container flex flex-col justify-center items-center mt-10">
-        {!loading && data && (
-          <>
-            <Categories categories={data?.allCategories.categories} />
-            <Restaurants restaurants={data?.allRestaurants.restaurants} />
-            <div className="w-40 flex justify-between">
-              <button onClick={onPrevPage}>prev</button>
-              <span>{`${page} / ${data?.allRestaurants.totalPages}`}</span>
-              <button onClick={onNextPage}>next</button>
-            </div>
-          </>
-        )}
-      </div>
+      {loading ? (
+        <Loader />
+      ) : (
+        <>
+          <form
+            className="w-full py-40 px-20 flex items-center justify-center bg-gray-800 sm:px-20"
+            action="search"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <input
+              type="search"
+              name="searchTerm"
+              ref={register({ required: true, minLength: 3 })}
+              className="form_input max-w-screen-md w-full  md:max-w-screen-sm sm:max-w-screen-sm rounded-md"
+              placeholder="Search restaurants..."
+            />
+          </form>
+          <div className="layout__container flex flex-col justify-center items-center mt-10">
+            {!loading && data && (
+              <>
+                <Categories categories={data?.allCategories.categories} />
+                <Restaurants restaurants={data?.allRestaurants.restaurants} />
+                <div className="w-40 flex justify-between">
+                  <button onClick={onPrevPage}>prev</button>
+                  <span>{`${page} / ${data?.allRestaurants.totalPages}`}</span>
+                  <button onClick={onNextPage}>next</button>
+                </div>
+              </>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 };

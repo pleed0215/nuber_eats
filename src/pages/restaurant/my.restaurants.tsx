@@ -46,11 +46,13 @@ export const MyRestaurants = () => {
               </div>
             ) : (
               <div>
-                <Link to="/create-restaurant">
-                  <p className="auth__form_button rounded-lg text-center mb-8">
-                    Create Restaurant
-                  </p>
-                </Link>
+                {data.myRestaurants.count < 3 && (
+                  <Link to="/create-restaurant">
+                    <p className="auth__form_button rounded-lg text-center mb-8">
+                      Create Restaurant
+                    </p>
+                  </Link>
+                )}
                 <div className="layout__container grid lg:grid-cols-3 md:grid-cols-2  sm:grid-cols-1 gap-4 mt-10">
                   {data?.myRestaurants.ok &&
                     data?.myRestaurants?.restaurants?.map((r) => (

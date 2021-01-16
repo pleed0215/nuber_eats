@@ -14,8 +14,10 @@ ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={apolloClient}>
       <HelmetProvider>
-        <App />
-        <ToastContainer position={toast.POSITION.BOTTOM_LEFT} />
+        <div className="pb-10">
+          <App />
+          <ToastContainer position={toast.POSITION.BOTTOM_LEFT} />
+        </div>
       </HelmetProvider>
     </ApolloProvider>
   </React.StrictMode>,

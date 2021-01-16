@@ -19,13 +19,13 @@ export const RestaurantItem: React.FC<IRestaurantItem> = ({
         className="py-28 bg-cover bg-center border border-gray-100 rounded-md"
         style={{ backgroundImage: `url(${restaurant?.coverImage})` }}
       ></div>
-      <h3 className="text-xl font-medium border-b border-gray-400 pb-2 mb-3">
+      <h3 className="text-xl font-medium border-b border-gray-400 pb-2 mb-1">
         {restaurant?.name}
       </h3>
     </Link>
     {categoryShow && restaurant?.category?.name && (
       <Link to={`/category/${restaurant?.category?.slug}`}>
-        <span className="px-2 py-1 bg-lime-600 text-md text-white rounded-xl">
+        <span className="px-2 py-1 bg-lime-600 text-md text-white rounded-xl text-xs">
           {restaurant?.category?.name}
         </span>
       </Link>

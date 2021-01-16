@@ -7,7 +7,7 @@ import {
 } from "@apollo/client";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useHistory, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -20,6 +20,7 @@ import { QueryDish } from "../../codegen/QueryDish";
 import {
   QueryMyRestaurant,
   QueryMyRestaurant_restaurant_restaurant_dishes,
+  QueryMyRestaurant_restaurant_restaurant_dishes_options_choices,
 } from "../../codegen/QueryMyRestaurant";
 import { FormButtonInactivable } from "../../components/form-button-inactivable";
 import { HelmetOnlyTitle } from "../../components/helmet.onlytitle";
@@ -93,12 +94,16 @@ interface INestedChoice {
   control: any;
   field: any;
   namePrefix: any;
+  choices?:
+    | QueryMyRestaurant_restaurant_restaurant_dishes_options_choices[]
+    | null;
 }
 
 const NestedChoice: React.FC<INestedChoice> = ({
   register,
   control,
   field,
+  choices,
   namePrefix,
 }) => {
   const { fields, append, remove } = useFieldArray({
@@ -106,11 +111,19 @@ const NestedChoice: React.FC<INestedChoice> = ({
     name: namePrefix,
   });
 
+  useMemo(
+    () =>
+      choices?.forEach((choice) =>
+        append({ name: choice.name, extra: choice.extra })
+      ),
+    [choices]
+  );
+
   return (
     <div className="w-full">
       <span
         className="cursor-pointer text-xs py-1 px-2 bg-lime-300 text-lime-600 rounded-md hover:bg-lime-600 hover:text-lime-300 transition duration-200 mr-4"
-        onClick={() => append({ name: "helloff", extra: 11 })}
+        onClick={() => append({ name: "", extra: 0 })}
       >
         Add choice
       </span>
@@ -304,6 +317,15 @@ export const CreateDish: React.FC = () => {
     removeOption(index);
   };
 
+  if (dishId && dishLoading) {
+    return (
+      <div className="layout__container flex justify-center items-center text-2xl">
+        <HelmetOnlyTitle title="Creating dish" />
+        Loading...
+      </div>
+    );
+  }
+
   return (
     <div className="layout__container">
       <HelmetOnlyTitle title="Creating dish" />
@@ -320,7 +342,7 @@ export const CreateDish: React.FC = () => {
         encType="multipart/form-data"
       >
         <p className="text-xl italic text-black mb-2">
-          Write dish information here.
+          Write dish information here.(Many bugs are here. To be fixed.)
         </p>
         {/* Dish information. Name, Price, Description */}
         <div className="auth__input_wrapper">
@@ -439,6 +461,9 @@ export const CreateDish: React.FC = () => {
                         register={register}
                         control={control}
                         field={field}
+                        choices={
+                          dishData.getDish.dish.options[optionIndex].choices
+                        }
                         namePrefix={`options[${optionIndex}].choices`}
                       />
 
