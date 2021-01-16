@@ -42,7 +42,10 @@ export const MyPage = () => {
               {!allOrdersLoading &&
                 allOrders &&
                 allOrders.getAllOrders.orders?.map((order) => (
-                  <div className="w-full mb-4 flex flex-col items-center justify-start">
+                  <div
+                    key={order.id}
+                    className="w-full mb-4 flex flex-col items-center justify-start"
+                  >
                     <div className="w-full py-2 bg-gray-700 text-white text-center">
                       Order: #{order.id}
                     </div>
