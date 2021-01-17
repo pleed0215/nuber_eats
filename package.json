@@ -30,6 +30,7 @@
     "react-dom": "^17.0.1",
     "react-helmet-async": "^1.0.7",
     "react-hook-form": "^6.12.2",
+    "react-kakao-maps": "github:Musma/react-kakao-maps#0.0.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
     "react-toastify": "^6.2.0",
@@ -72,7 +73,8 @@
     "@testing-library/cypress": "^7.0.3",
     "@types/google-map-react": "^2.1.0",
     "@types/googlemaps": "^3.43.0",
-    "@types/minio": "^7.0.6"
+    "@types/minio": "^7.0.6",
+    "daum.maps.d.ts": "github:Musma/daum.maps.d.ts"
   },
   "jest": {
     "collectCoverageFrom": [

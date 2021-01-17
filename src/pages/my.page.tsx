@@ -1,11 +1,8 @@
 import { gql, useQuery } from "@apollo/client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { OrderStatus } from "../codegen/globalTypes";
-import {
-  QueryGetAllOrders,
-  QueryGetAllOrders_getAllOrders_orders,
-} from "../codegen/QueryGetAllOrders";
+
+import { QueryGetAllOrders } from "../codegen/QueryGetAllOrders";
 import { FULL_ORDER_FRAGMENT } from "../fragments";
 
 const GQL_GET_ALL_ORDERS = gql`
@@ -25,7 +22,6 @@ export const MyPage = () => {
   const {
     data: allOrders,
     loading: allOrdersLoading,
-    error,
   } = useQuery<QueryGetAllOrders>(GQL_GET_ALL_ORDERS);
 
   return (
