@@ -9,11 +9,18 @@ import { apolloClient } from "./apollo";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { HelmetProvider } from "react-helmet-async";
-
+import { RenderAfterNavermapsLoaded } from "react-naver-maps";
 ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={apolloClient}>
       <HelmetProvider>
+        {/*제대로 작동 안함.
+        <RenderAfterNavermapsLoaded
+          ncpClientId={process.env.REACT_APP_NCLOUD_MAP_CLIENT_ID}
+          error={<p>Maps Load Error</p>}
+          loading={<p>Maps Loading...</p>}
+          submodule={["geocoder"]}
+        >*/}
         <div className="pb-10">
           <App />
           <ToastContainer position={toast.POSITION.BOTTOM_LEFT} />

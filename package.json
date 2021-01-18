@@ -30,7 +30,7 @@
     "react-dom": "^17.0.1",
     "react-helmet-async": "^1.0.7",
     "react-hook-form": "^6.12.2",
-    "react-kakao-maps": "github:Musma/react-kakao-maps#0.0.1",
+    "react-naver-maps": "0.0.13",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
     "react-toastify": "^6.2.0",

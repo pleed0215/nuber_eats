@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import GoogleMapReact from "google-map-react";
+import googleMapReact from "google-map-react";
 import { gql, useMutation, useSubscription } from "@apollo/client";
 import { FULL_ORDER_FRAGMENT } from "../../fragments";
 import { OnCookedOrders } from "../../codegen/OnCookedOrders";
@@ -9,7 +11,7 @@ import {
 } from "../../codegen/MutationOrderPick";
 import { OrderStatus } from "../../codegen/globalTypes";
 import { toast } from "react-toastify";
-import { NaverMap, Marker } from "react-naver-maps";
+import { Map } from "react-kakao-maps";
 
 interface ICoords {
   lat: number;
@@ -53,9 +55,8 @@ const Driver: React.FC<IDriverProps> = ({ lat, lng, $hover }) => (
 
 export const DashBoard = () => {
   const [driverCoords, setDriverCoords] = useState<ICoords>({ lng: 0, lat: 0 });
-  const [destCoords, setDestCoords] = useState<ICoords>();
-  // @ts-ignore
-  const naverMaps = window.naver.maps;
+  const [googleMap, setGoogleMap] = useState<google.maps.Map | null>(null);
+  const [googleMaps, setGoogleMaps] = useState<googleMapReact | null>(null);
   const onSuccess = ({
     coords: { latitude, longitude },
   }: GeolocationPosition) => {
@@ -79,20 +80,6 @@ export const DashBoard = () => {
     },
   });
 
-  const onDesinationRecieved = () => {
-    //https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query={주소}&coordinate=#{검색_중심_좌표}"
-    naverMaps.Service.geocode({ query: "월배로 119" }, (status, response) => {
-      if (status === naverMaps.Service.Status.Error) {
-        console.log("error");
-      } else {
-        const {
-          v2: { addresses },
-        } = response;
-        setDestCoords({ lat: addresses[0].y, lng: addresses[0].x });
-      }
-    });
-  };
-
   useEffect(() => {
     navigator.geolocation.watchPosition(onSuccess, onError, {
       enableHighAccuracy: true,
@@ -100,44 +87,70 @@ export const DashBoard = () => {
   }, []);
 
   useEffect(() => {
-    /* 위치가 바뀔 때*/
+    if (googleMap && googleMaps) {
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode(
+        {
+          location: new google.maps.LatLng(driverCoords.lat, driverCoords.lng),
+        },
+        (results, status) => {
+          console.log("status", status);
+          console.log("results", results);
+        }
+      );
+    }
   }, [driverCoords.lat, driverCoords.lng]);
 
   useEffect(() => {
     if (cookedOrdersData?.cookedOrders?.id) {
+      onGetRouteClick();
     }
     return () => {};
   }, [cookedOrdersData]);
 
+  const onApiLoaded = ({ map, maps }: { map: any; maps: any }) => {
+    setGoogleMap(map);
+    setGoogleMaps(maps);
+    map.panTo(new maps.LatLng(driverCoords.lat, driverCoords.lng));
+  };
+
+  const onGetRouteClick = () => {
+    if (googleMap) {
+      const directionsService = new google.maps.DirectionsService();
+      const directionsRenderer = new google.maps.DirectionsRenderer();
+      directionsRenderer.setMap(googleMap);
+      directionsService.route(
+        {
+          origin: {
+            location: new google.maps.LatLng(51.507351, -0.127758),
+          },
+          destination: {
+            location: new google.maps.LatLng(51.5127196, -0.1268353),
+          },
+          travelMode: google.maps.TravelMode.DRIVING,
+        },
+        (result, status) => {
+          console.log(result);
+          directionsRenderer.setDirections(result);
+        }
+      );
+    }
+  };
+
   return (
-    <div className="h-full">
-      <div
-        id="react-naver-map"
-        className=""
-        style={{ width: window.innerWidth, height: "50vh" }}
-      >
-        <NaverMap
-          mapDivId={"react-naver-map"}
-          className="w-full h-half"
-          defaultCenter={{ lat: driverCoords.lat, lng: driverCoords.lng }}
-          center={driverCoords}
-          defaultZoom={17}
+    <div>
+      <div className="" style={{ width: window.innerWidth, height: "50vh" }}>
+        <GoogleMapReact
+          defaultZoom={18}
+          yesIWantToUseGoogleMapApiInternals
+          onGoogleApiLoaded={onApiLoaded}
+          center={{ lng: driverCoords.lng, lat: driverCoords.lat }}
+          bootstrapURLKeys={{ key: "AIzaSyBXMuO-0G-Lkxq_JDP1v9zG7VN4n2l5DdE" }}
         >
-          <Marker
-            position={new naverMaps.LatLng(driverCoords.lat, driverCoords.lng)}
-            title="현재위치"
-          />
-          {destCoords && (
-            <Marker
-              position={new naverMaps.LatLng(destCoords.lat, destCoords.lng)}
-              title="배달위치"
-            />
-          )}
-        </NaverMap>
-      </div>
-      <div>
+          <Driver lng={driverCoords.lng} lat={driverCoords.lat} />
+        </GoogleMapReact>
         {cookedOrdersData?.cookedOrders.restaurant ? (
-          <div className=" max-w-screen-sm  mx-auto bg-white shadow-lg py-8 px-5 z-50 mt-4">
+          <div className=" max-w-screen-sm  mx-auto bg-white relative -top-10 shadow-lg py-8 px-5">
             <h1 className="text-center text-3xl font-medium">
               New Cooked order
             </h1>
@@ -160,10 +173,7 @@ export const DashBoard = () => {
             </button>
           </div>
         ) : (
-          <div
-            className=" max-w-screen-sm  mx-auto bg-white relative -top-10  z-50 shadow-lg py-8 px-5"
-            onClick={() => onDesinationRecieved()}
-          >
+          <div className=" max-w-screen-sm  mx-auto bg-white relative -top-10 shadow-lg py-8 px-5">
             <h1 className="text-center text-3xl font-medium">No orders yet</h1>
           </div>
         )}

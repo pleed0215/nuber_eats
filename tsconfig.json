@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "types": ["googlemaps", "daum.maps.d.ts"],
+    "types": ["googlemaps"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
