@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { createRef, useEffect, useRef, useState } from "react";
 import { gql, useMutation, useSubscription } from "@apollo/client";
 import { FULL_ORDER_FRAGMENT } from "../../fragments";
 import { OnCookedOrders } from "../../codegen/OnCookedOrders";
@@ -9,7 +9,8 @@ import {
 } from "../../codegen/MutationOrderPick";
 import { OrderStatus } from "../../codegen/globalTypes";
 import { toast } from "react-toastify";
-import { NaverMap, Marker } from "react-naver-maps";
+import { NaverMap, Marker, Polyline } from "react-naver-maps";
+import jsonp from "jsonp";
 
 interface ICoords {
   lat: number;
@@ -21,6 +22,8 @@ interface IDriverProps {
   lng: number;
   $hover?: any;
 }
+
+const NAVER_API_HOST = "http://my.yoyang.io:1111/routes";
 
 const GQL_COOCKED_ORDERS = gql`
   subscription OnCookedOrders {
@@ -52,10 +55,15 @@ const Driver: React.FC<IDriverProps> = ({ lat, lng, $hover }) => (
 );
 
 export const DashBoard = () => {
-  const [driverCoords, setDriverCoords] = useState<ICoords>({ lng: 0, lat: 0 });
-  const [destCoords, setDestCoords] = useState<ICoords>();
   // @ts-ignore
   const naverMaps = window.naver.maps;
+
+  const [driverCoords, setDriverCoords] = useState<ICoords>({ lng: 0, lat: 0 });
+  const [destCoords, setDestCoords] = useState<ICoords>();
+
+  // @ts-ignore
+  const [destPath, setDestPath] = useState<naverMaps.LatLng[]>();
+  const [mapRef, setMapRef] = useState<any>();
   const onSuccess = ({
     coords: { latitude, longitude },
   }: GeolocationPosition) => {
@@ -81,16 +89,39 @@ export const DashBoard = () => {
 
   const onDesinationRecieved = () => {
     //https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query={주소}&coordinate=#{검색_중심_좌표}"
-    naverMaps.Service.geocode({ query: "월배로 119" }, (status, response) => {
-      if (status === naverMaps.Service.Status.Error) {
-        console.log("error");
-      } else {
-        const {
-          v2: { addresses },
-        } = response;
-        setDestCoords({ lat: addresses[0].y, lng: addresses[0].x });
+    naverMaps.Service.geocode(
+      { query: "월배로 119" },
+      async (status, response) => {
+        if (status === naverMaps.Service.Status.Error) {
+          console.log("error");
+        } else {
+          const {
+            v2: { addresses },
+          } = response;
+          const lat = addresses[0].y,
+            lng = addresses[0].x;
+          setDestCoords({ lat, lng });
+          const result = await (
+            await fetch(
+              `${NAVER_API_HOST}?start=${driverCoords.lng},${driverCoords.lat}&goal=${lng},${lat}`
+            )
+          ).json();
+          const {
+            route: { traoptimal },
+          } = result;
+          const { guide, path } = traoptimal[0];
+          setDestPath(path.map((p) => new naverMaps.LatLng(p[1], p[0])));
+          const fitBounds = new naverMaps.LatLngBounds(
+            new naverMaps.LatLng(driverCoords.lat, driverCoords.lng),
+            new naverMaps.LatLng(lat, lng)
+          );
+
+          // @ts-ignore
+          mapRef.fitBounds(fitBounds);
+          mapRef.setZoom(16);
+        }
       }
-    });
+    );
   };
 
   useEffect(() => {
@@ -117,6 +148,9 @@ export const DashBoard = () => {
         style={{ width: window.innerWidth, height: "50vh" }}
       >
         <NaverMap
+          naverRef={(ref) => {
+            setMapRef(ref);
+          }}
           mapDivId={"react-naver-map"}
           className="w-full h-half"
           defaultCenter={{ lat: driverCoords.lat, lng: driverCoords.lng }}
@@ -131,6 +165,15 @@ export const DashBoard = () => {
             <Marker
               position={new naverMaps.LatLng(destCoords.lat, destCoords.lng)}
               title="배달위치"
+            />
+          )}
+          {destCoords && destPath && (
+            <Polyline
+              path={destPath}
+              // clickable // 사용자 인터랙션을 받기 위해 clickable을 true로 설정합니다.
+              strokeColor={"#5347AA"}
+              strokeOpacity={0.9}
+              strokeWeight={5}
             />
           )}
         </NaverMap>
