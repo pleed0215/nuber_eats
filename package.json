@@ -24,7 +24,6 @@
     "cypress": "^6.1.0",
     "google-map-react": "^2.1.9",
     "graphql": "^15.4.0",
-    "jsonp": "^0.2.1",
     "minio": "^7.0.17",
     "postcss": "^7.0.35",
     "react": "^17.0.1",
@@ -74,7 +73,6 @@
     "@testing-library/cypress": "^7.0.3",
     "@types/google-map-react": "^2.1.0",
     "@types/googlemaps": "^3.43.0",
-    "@types/jsonp": "^0.2.0",
     "@types/minio": "^7.0.6",
     "daum.maps.d.ts": "github:Musma/daum.maps.d.ts"
   },

@@ -15,6 +15,6 @@ export const FormButtonInactivable: React.FC<FormButtonInactivableType> = ({
     className="auth__form_button flex justify-center"
     disabled={!isActivate}
   >
-    {loading ? <Loader color="" /> : children}
+    {loading ? <Loader /> : children}
   </button>
 );

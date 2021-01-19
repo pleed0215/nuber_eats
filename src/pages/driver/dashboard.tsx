@@ -1,4 +1,10 @@
-import React, { createRef, useEffect, useRef, useState } from "react";
+import React, {
+  createRef,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { gql, useMutation, useSubscription } from "@apollo/client";
 import { FULL_ORDER_FRAGMENT } from "../../fragments";
 import { OnCookedOrders } from "../../codegen/OnCookedOrders";
@@ -10,12 +16,7 @@ import {
 import { OrderStatus } from "../../codegen/globalTypes";
 import { toast } from "react-toastify";
 import { NaverMap, Marker, Polyline } from "react-naver-maps";
-import jsonp from "jsonp";
-
-interface ICoords {
-  lat: number;
-  lng: number;
-}
+import { ICoords, PositionContext } from "../../App";
 
 interface IDriverProps {
   lat: number;
@@ -57,19 +58,13 @@ const Driver: React.FC<IDriverProps> = ({ lat, lng, $hover }) => (
 export const DashBoard = () => {
   // @ts-ignore
   const naverMaps = window.naver.maps;
+  const driverCoords = useContext(PositionContext);
 
-  const [driverCoords, setDriverCoords] = useState<ICoords>({ lng: 0, lat: 0 });
   const [destCoords, setDestCoords] = useState<ICoords>();
 
   // @ts-ignore
   const [destPath, setDestPath] = useState<naverMaps.LatLng[]>();
   const [mapRef, setMapRef] = useState<any>();
-  const onSuccess = ({
-    coords: { latitude, longitude },
-  }: GeolocationPosition) => {
-    setDriverCoords({ lng: longitude, lat: latitude });
-  };
-  const onError = (error: GeolocationPositionError) => {};
 
   const { data: cookedOrdersData } = useSubscription<OnCookedOrders>(
     GQL_COOCKED_ORDERS
@@ -87,55 +82,43 @@ export const DashBoard = () => {
     },
   });
 
-  const onDesinationRecieved = () => {
+  const onDesinationRecieved = (address) => {
     //https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query={주소}&coordinate=#{검색_중심_좌표}"
-    naverMaps.Service.geocode(
-      { query: "월배로 119" },
-      async (status, response) => {
-        if (status === naverMaps.Service.Status.Error) {
-          console.log("error");
-        } else {
-          const {
-            v2: { addresses },
-          } = response;
-          const lat = addresses[0].y,
-            lng = addresses[0].x;
-          setDestCoords({ lat, lng });
-          const result = await (
-            await fetch(
-              `${NAVER_API_HOST}?start=${driverCoords.lng},${driverCoords.lat}&goal=${lng},${lat}`
-            )
-          ).json();
-          const {
-            route: { traoptimal },
-          } = result;
-          const { guide, path } = traoptimal[0];
-          setDestPath(path.map((p) => new naverMaps.LatLng(p[1], p[0])));
-          const fitBounds = new naverMaps.LatLngBounds(
-            new naverMaps.LatLng(driverCoords.lat, driverCoords.lng),
-            new naverMaps.LatLng(lat, lng)
-          );
+    naverMaps.Service.geocode({ query: address }, async (status, response) => {
+      if (status === naverMaps.Service.Status.Error) {
+        console.log("error");
+      } else {
+        const {
+          v2: { addresses },
+        } = response;
+        const lat = addresses[0].y,
+          lng = addresses[0].x;
+        setDestCoords({ lat, lng });
+        const result = await (
+          await fetch(
+            `${NAVER_API_HOST}?start=${driverCoords.lng},${driverCoords.lat}&goal=${lng},${lat}`
+          )
+        ).json();
+        const {
+          route: { traoptimal },
+        } = result;
+        const { guide, path } = traoptimal[0];
+        setDestPath(path.map((p) => new naverMaps.LatLng(p[1], p[0])));
+        const fitBounds = new naverMaps.LatLngBounds(
+          new naverMaps.LatLng(driverCoords.lat, driverCoords.lng),
+          new naverMaps.LatLng(lat, lng)
+        );
 
-          // @ts-ignore
-          mapRef.fitBounds(fitBounds);
-          mapRef.setZoom(16);
-        }
+        // @ts-ignore
+        mapRef.fitBounds(fitBounds);
+        mapRef.setZoom(16);
       }
-    );
+    });
   };
 
   useEffect(() => {
-    navigator.geolocation.watchPosition(onSuccess, onError, {
-      enableHighAccuracy: true,
-    });
-  }, []);
-
-  useEffect(() => {
-    /* 위치가 바뀔 때*/
-  }, [driverCoords.lat, driverCoords.lng]);
-
-  useEffect(() => {
     if (cookedOrdersData?.cookedOrders?.id) {
+      onDesinationRecieved("월배로 119");
     }
     return () => {};
   }, [cookedOrdersData]);
@@ -173,7 +156,9 @@ export const DashBoard = () => {
               // clickable // 사용자 인터랙션을 받기 위해 clickable을 true로 설정합니다.
               strokeColor={"#5347AA"}
               strokeOpacity={0.9}
+              strokeStyle={"shortdash"}
               strokeWeight={5}
+              endIcon={2}
             />
           )}
         </NaverMap>
@@ -203,10 +188,7 @@ export const DashBoard = () => {
             </button>
           </div>
         ) : (
-          <div
-            className=" max-w-screen-sm  mx-auto bg-white relative -top-10  z-50 shadow-lg py-8 px-5"
-            onClick={() => onDesinationRecieved()}
-          >
+          <div className=" max-w-screen-sm  mx-auto bg-white relative -top-10  z-50 shadow-lg py-8 px-5">
             <h1 className="text-center text-3xl font-medium">No orders yet</h1>
           </div>
         )}

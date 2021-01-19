@@ -25,6 +25,7 @@ import { MyPage } from "../pages/my.page";
 import { TOKEN_NAME } from "../gloabl.constant";
 import { authTokenVar, isLoggedInVar } from "../apollo";
 import { useApolloClient } from "@apollo/client";
+import { SetAddress } from "../pages/user/set.address";
 
 interface IRouteItem {
   path: string;
@@ -107,6 +108,10 @@ const commonRoutes: IRouteItem[] = [
   {
     path: "/my-page",
     component: MyPage,
+  },
+  {
+    path: "/my-address",
+    component: SetAddress,
   },
 ];
 
