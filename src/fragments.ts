@@ -52,6 +52,8 @@ export const ORDER_FRAGMENT = gql`
     totalCost
     restaurant {
       id
+      name
+      address
     }
     orderStatus
     driver {
@@ -61,6 +63,7 @@ export const ORDER_FRAGMENT = gql`
     customer {
       id
       email
+      address
     }
     orderItems {
       dish {
@@ -92,6 +95,7 @@ export const FULL_ORDER_FRAGMENT = gql`
     customer {
       id
       email
+      address
     }
     restaurant {
       name
