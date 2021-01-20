@@ -3,6 +3,7 @@ import { LoggedInRouter } from "./routers/logged-in-router";
 import { LoggedOutRouter } from "./routers/logged-out-router";
 import { isLoggedInVar } from "./apollo";
 import { useReactiveVar } from "@apollo/client";
+import { useScript } from "./hooks/useScript";
 
 export interface ICoords {
   lat: number;
@@ -22,6 +23,10 @@ function App() {
     setCurrentCoords({ lng: longitude, lat: latitude });
   };
   const onError = (error: GeolocationPositionError) => {};
+
+  useScript(
+    "https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=ef5ns3n3ln&submodules=geocoder"
+  );
 
   useEffect(() => {
     navigator.geolocation.watchPosition(onSuccess, onError, {
