@@ -72,7 +72,6 @@ export const SetAddress: React.FC = () => {
     // http://postcode.map.daum.net/guide#usage
 
     if (data) {
-      console.log(data);
       setValue("address", data.roadAddress);
       setValue("zonecode", data.zonecode);
     }
@@ -100,13 +99,14 @@ export const SetAddress: React.FC = () => {
         { query: address },
         async (status, response) => {
           if (status === naverMaps.Service.Status.Error) {
-            console.log("error");
+            toast.error(
+              "Fetching address is failed. It is maybe naver maps service status error."
+            );
           } else {
             const {
               v2: { addresses },
             } = response;
             if (addresses.length > 0) {
-              console.log("response", response);
               const lat = addresses[0].y,
                 lng = addresses[0].x;
               setAddressCoords({ lat, lng });
