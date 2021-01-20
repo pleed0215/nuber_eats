@@ -1,12 +1,13 @@
 import { gql, useQuery } from "@apollo/client";
 import { QueryMe } from "../codegen/QueryMe";
 
-const GQL_QUERY_ME = gql`
+export const GQL_QUERY_ME = gql`
   query QueryMe {
     me {
       id
       email
       role
+      address
       verified
     }
   }

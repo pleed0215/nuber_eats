@@ -14,6 +14,7 @@ export interface QueryMe_me {
   id: number;
   email: string;
   role: UserRole;
+  address: string | null;
   verified: boolean | null;
 }
 

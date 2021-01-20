@@ -73,6 +73,7 @@ export interface OrderItemOptionInputType {
 export interface UpdateProfileInput {
   email?: string | null;
   role?: UserRole | null;
+  address?: string | null;
 }
 
 export interface UpdateRestaurantInput {

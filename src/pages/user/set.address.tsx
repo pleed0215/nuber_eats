@@ -1,9 +1,21 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { useMe } from "../../hooks/useMe";
+import { useMe, GQL_QUERY_ME } from "../../hooks/useMe";
 import { NaverMap, Marker, Polyline } from "react-naver-maps";
 import { ICoords, PositionContext } from "../../App";
 import { useScript } from "../../hooks/useScript";
+import { gql, useMutation } from "@apollo/client";
+import { toast } from "react-toastify";
+import { useHistory } from "react-router-dom";
+
+const MutationUpdateAddress = gql`
+  mutation QueryUpdateAddress($address: String!) {
+    updateProfile(update: { address: $address }) {
+      ok
+      error
+    }
+  }
+`;
 
 interface IForm {
   address: string;
@@ -12,14 +24,48 @@ interface IForm {
 
 export const SetAddress: React.FC = () => {
   const me = useMe();
+  const history = useHistory();
   // @ts-ignore
   const naverMaps = window.naver.maps;
-  const { register, getValues, setValue, control } = useForm<IForm>();
+  const {
+    register,
+    getValues,
+    setValue,
+    control,
+    handleSubmit,
+  } = useForm<IForm>();
   const address = useWatch({ control, name: "address" });
   const [addressCoords, setAddressCoords] = useState<ICoords>(null);
   const [mapRef, setMapRef] = useState<any>();
   const currentCoords = useContext(PositionContext);
+  const [updateAddress, { loading: updateLoading }] = useMutation(
+    MutationUpdateAddress,
+    {
+      onCompleted: (data) => {
+        if (data.updateProfile.ok) {
+          toast.success("Address successfully updated.");
+          history.push("/");
+        }
+      },
+    }
+  );
   let daumPostcode = null;
+
+  const onUpdateAddress = async () => {
+    const address = getValues("address");
+    if (me && address !== "" && me.data.me.address !== address) {
+      await updateAddress({
+        variables: {
+          address,
+        },
+        refetchQueries: [
+          {
+            query: GQL_QUERY_ME,
+          },
+        ],
+      });
+    }
+  };
 
   const onPostcodeComplete = (data) => {
     // daum post code 이용방법
@@ -34,6 +80,12 @@ export const SetAddress: React.FC = () => {
   useScript(
     "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"
   );
+
+  useEffect(() => {
+    if (me) {
+      setValue("address", me.data.me.address);
+    }
+  }, [me]);
 
   const onPostcodeClick = () => {
     // @ts-ignore
@@ -53,9 +105,16 @@ export const SetAddress: React.FC = () => {
             const {
               v2: { addresses },
             } = response;
-            const lat = addresses[0].y,
-              lng = addresses[0].x;
-            setAddressCoords({ lat, lng });
+            if (addresses.length > 0) {
+              console.log("response", response);
+              const lat = addresses[0].y,
+                lng = addresses[0].x;
+              setAddressCoords({ lat, lng });
+            } else {
+              toast.error(
+                "Fetching address is failed. It is maybe naver maps api(geocoder) problem.."
+              );
+            }
           }
         }
       );
@@ -65,7 +124,7 @@ export const SetAddress: React.FC = () => {
   return (
     <div className="layout__container flex flex-col">
       <h4 className="text-xl mb-2">Input your address, click zoncode button</h4>
-      <form className="w-full mb-8">
+      <form onSubmit={handleSubmit(onUpdateAddress)} className="w-full mb-8">
         <div className="flex mb-2">
           <input
             className="auth__form_input mr-2 w-32"
@@ -84,7 +143,7 @@ export const SetAddress: React.FC = () => {
         </div>
         <input
           className="auth__form_input"
-          ref={register()}
+          ref={register({ required: true })}
           type="text"
           name="address"
           placeholder="Address"
@@ -93,8 +152,8 @@ export const SetAddress: React.FC = () => {
         <div className="w-full flex justify-center">
           <input
             type="submit"
-            className="auth__form_button"
-            value="Update address"
+            className="auth__form_button cursor-pointer"
+            value={updateLoading ? "Updating..." : "Update address"}
           />
         </div>
       </form>
