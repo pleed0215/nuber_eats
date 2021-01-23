@@ -12,6 +12,8 @@ import { OrderStatus } from "./globalTypes";
 export interface OrderPart_restaurant {
   __typename: "Restaurant";
   id: number;
+  name: string;
+  address: string;
 }
 
 export interface OrderPart_driver {
@@ -24,6 +26,7 @@ export interface OrderPart_customer {
   __typename: "User";
   id: number;
   email: string;
+  address: string | null;
 }
 
 export interface OrderPart_orderItems_dish {

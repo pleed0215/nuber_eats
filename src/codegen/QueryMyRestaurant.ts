@@ -42,6 +42,8 @@ export interface QueryMyRestaurant_restaurant_restaurant_dishes {
 export interface QueryMyRestaurant_restaurant_restaurant_orders_restaurant {
   __typename: "Restaurant";
   id: number;
+  name: string;
+  address: string;
 }
 
 export interface QueryMyRestaurant_restaurant_restaurant_orders_driver {
@@ -54,6 +56,7 @@ export interface QueryMyRestaurant_restaurant_restaurant_orders_customer {
   __typename: "User";
   id: number;
   email: string;
+  address: string | null;
 }
 
 export interface QueryMyRestaurant_restaurant_restaurant_orders_orderItems_dish {

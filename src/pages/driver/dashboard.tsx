@@ -24,7 +24,7 @@ interface IDriverProps {
   $hover?: any;
 }
 
-const NAVER_API_HOST = "http://my.yoyang.io:1111/routes";
+const NAVER_API_HOST = "https://secure-garden-17403.herokuapp.com/routes";
 
 const GQL_COOCKED_ORDERS = gql`
   subscription OnCookedOrders {
