@@ -1,5 +1,5 @@
 import { useApolloClient } from "@apollo/client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { authTokenVar, isLoggedInVar } from "../../apollo";
 import { TOKEN_NAME } from "../../gloabl.constant";
@@ -14,7 +14,11 @@ export const LogOutPage = () => {
     authTokenVar(null);
     client.cache.reset().then(() => history.push("/"));
   };
-  setTimeout(handleLogout, 2000);
+
+  useEffect(() => {
+    const timeoutHandler = setTimeout(handleLogout, 2000);
+    return () => clearTimeout(timeoutHandler);
+  }, []);
 
   return (
     <div className="w-screen h-screen flex flex-col justify-center items-center">
