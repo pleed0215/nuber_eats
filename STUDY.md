@@ -499,18 +499,26 @@ jest.mock("./routers/logged-out-router", () => {
 });
 ```
 
+- unit test 이기 때문에 unit과 관련 없는 부분은 component를 mocking 해줘야 함.
+
 LoggedOutRouter를 mocking하는 부분..
 
 #### render function
 
-- ReactDOM을 mocking한 render는 많은 함수를 가지고 있는 오브젝트이다. 강의에서는 그 중 debug를 호출해보는데, debug는 component들을 다 출력해주더라.
+- debug
+
+  - ReactDOM을 mocking한 render는 많은 함수를 가지고 있는 오브젝트이다. 강의에서는 그 중 debug를 호출해보는데, debug는 component들을 다 출력해주더라.
 
 - getByText
+
   - text를 테스트 하는 함수. 입력된 텍스트와 출력된 테스트가 같지 않으면 에러가 발생한다.
+
+-
 
 #### react component update in test
 
 - isLoggedInVar를 업데이트 해줘야 logged in으로 들어갈 수 있는데, 이부분에서 에러가 발생한다고 강의에서 나오지만, 나는 발생하지 않았는데 혹시 이것이 버전 업이 되면서 해결된 문제인가 싶긴하지만 일단 강의를 따라 가기로 하였다.
+- waitFor에서는 state를 change하고 싶을 때.. 사용한다.
 
 ```ts
 await waitFor(() => {
@@ -526,7 +534,41 @@ await waitFor(() => {
 - expect(container.firstChild).to~~~
   - 이런식으로 testing해주면 된다.
 
---- 잠깐 보류
+### --verbose flag it에 들어가있는 문구가 나오면서 테스팅 된다.
+
+### npm i -D @testing-library/jest-dom@^4.2.4
+
+- 이걸 설치해줘야 toHaveClass 같은 dom 관련 메소드를 사용할 수 있다.
+- import "@testing-library/jest-dom/extend-expect"; 이걸 해줘야 함.
+
+### mocking apollo client
+
+- apollo client에서 이미 제공을 해줌.
+- 방법은 두 가지가 있다. MockedProvder를 이용하거나 또는 createMockClient, MockApolloClient를 이용해 client를 mocking하거나.
+- header를 테스팅할 때 useMe를 왠지 mocking해야 할 것 같은 느낌이 드는데, component안에서는 다른 함수들을 mocking 하면 안된다고 한다.
+  - hook 자체를 mocking하면 안되고, hook의 결과를 mocking해야 한다.
+  - MockedProvider는 mocks라는 것을 제공하는데, 이 object는 request와, result를 가지고 있는 오브젝트인데
+    - request는 useQuery나 useMutation과 같은 옵션을 가지고 있어서, query와 variables를 가지고 있다.
+    ```js
+    const mocks = {
+      request: {
+        query: GET_DOG_QUERY,
+        variables: {
+          name: "Buck",
+        },
+      },
+      result: {
+        data: {
+          dog: { id: 1, name: "Buck", breed: "bulldog" },
+        },
+      },
+    };
+    ```
+  - mocking한 query는 너무 빨리 일어나기 때문에,
+    ```js
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    ```
+    이렇게 해주라 함.
 
 ## 6. Cypress
 
